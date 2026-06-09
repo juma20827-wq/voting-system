@@ -7,141 +7,101 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# ========================
-# SECURITY
-# ========================
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'dev-secret')
-
-DEBUG = False
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-secret")
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = [
-    "votingweb-cfsl.onrender.com",
+    "24bia057.pythonanywhere.com",
     "localhost",
-    "127.0.0.1"
+    "127.0.0.1",
 ]
 
-# ========================
-# APPLICATIONS
-# ========================
 INSTALLED_APPS = [
-    'corsheaders',
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-
-    'rest_framework',
-    'api',
+    "corsheaders",
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "rest_framework",
+    "api",
 ]
 
-# ========================
-# MIDDLEWARE
-# ========================
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
-
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-# ========================
-# CORS (Frontend Netlify)
-# ========================
-CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOW_ALL_ORIGINS = True
 
-CORS_ALLOWED_ORIGINS = [
-    "https://votingweb-cfsl.onrender.com",
-    "http://localhost:3000",
-    "http://127.0.0.1:5500"
-]
+ROOT_URLCONF = "voting_project.urls"
 
-# ========================
-# URLS
-# ========================
-ROOT_URLCONF = 'voting_project.urls'
-
-# ========================
-# TEMPLATES
-# ========================
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR.parent / 'frontend' / 'public'],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [
+            BASE_DIR.parent / "frontend" / "public",
+            BASE_DIR / "templates",
+        ],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'voting_project.wsgi.application'
+WSGI_APPLICATION = "voting_project.wsgi.application"
 
-# ========================
-# DATABASE (POSTGRES FOR RENDER)
-# ========================
 DATABASES = {
-    'default': dj_database_url.config(
-        default=os.getenv('DATABASE_URL')
+    "default": dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
     )
 }
 
-# ========================
-# VALIDATION
-# ========================
 AUTH_PASSWORD_VALIDATORS = []
 
-# ========================
-# LANGUAGE / TIME
-# ========================
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+LANGUAGE_CODE = "en-us"
+TIME_ZONE = "Africa/Dar_es_Salaam"
 USE_I18N = True
 USE_TZ = True
 
-# ========================
-# STATIC & MEDIA
-# ========================
-STATIC_URL = '/static/'
+STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-STATICFILES_DIRS = [
-    BASE_DIR.parent / 'css',
-    BASE_DIR.parent / 'frontend' / 'static',
-]
+STATICFILES_DIRS = []
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+css_dir = BASE_DIR.parent / "css"
+frontend_static_dir = BASE_DIR.parent / "frontend" / "static"
 
-# WhiteNoise (static files serve in production)
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+if css_dir.exists():
+    STATICFILES_DIRS.append(css_dir)
 
-# ========================
-# DEFAULT
-# ========================
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+if frontend_static_dir.exists():
+    STATICFILES_DIRS.append(frontend_static_dir)
 
-# ========================
-# CUSTOM ADMIN KEY
-# ========================
-ADMIN_API_KEY = os.getenv('ADMIN_API_KEY', 'adminsecret')
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
-# ========================
-# REST FRAMEWORK
-# ========================
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+ADMIN_API_KEY = os.getenv("ADMIN_API_KEY", "adminsecret")
+
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (),
-    'DEFAULT_PERMISSION_CLASSES': (),
+    "DEFAULT_AUTHENTICATION_CLASSES": (),
+    "DEFAULT_PERMISSION_CLASSES": (),
 }
