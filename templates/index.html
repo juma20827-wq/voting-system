@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}Voting App — Home{% endblock %}
+{% block content %}
+<section class="hero-section text-white text-center py-7">
+  <div class="container">
+    <div class="hero-copy">
+      <span class="eyebrow">Trusted community voting</span>
+      <h1 class="display-5 fw-bold">Cast your vote with confidence.</h1>
+      <p class="lead text-white-75">Real-time results, better identity support, and a beautiful interface for every voter.</p>
+      <div class="hero-actions d-flex justify-content-center gap-3 flex-wrap mt-4">
+        <a href="/vote/" class="btn btn-primary btn-lg">Vote now</a>
+        <a href="/results/" class="btn btn-outline-light btn-lg">Live results</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="container py-6">
+  <div class="row g-4">
+    <div class="col-lg-4">
+      <article class="feature-card shadow-sm p-4 rounded-4 h-100">
+        <h2>Transparent results</h2>
+        <p>Live vote totals update automatically so every participant can follow the election in real time.</p>
+      </article>
+    </div>
+    <div class="col-lg-4">
+      <article class="feature-card shadow-sm p-4 rounded-4 h-100">
+        <h2>Identity-first voting</h2>
+        <p>Track your voting experience with a voter profile, email validation, and logout support.</p>
+      </article>
+    </div>
+    <div class="col-lg-4">
+      <article class="feature-card shadow-sm p-4 rounded-4 h-100">
+        <h2>Polished experience</h2>
+        <p>Every page is designed for clarity, speed, and easy use on mobile or desktop.</p>
+      </article>
+    </div>
+  </div>
+</section>
+{% endblock %}
+{% block page_js %}
+<script>window.pageInit && window.pageInit('home')</script>
+{% endblock %}
