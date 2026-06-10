@@ -26,5 +26,9 @@
 </section>
 {% endblock %}
 {% block page_js %}
-<script>window.pageInit && window.pageInit('login')</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        window.pageInit('login');
+    });
+</script>
 {% endblock %}
