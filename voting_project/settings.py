@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+
 from dotenv import load_dotenv
 import dj_database_url
 
@@ -48,8 +49,8 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
-            BASE_DIR.parent / "frontend" / "public",
             BASE_DIR / "templates",
+            BASE_DIR.parent / "frontend" / "public",
         ],
         "APP_DIRS": True,
         "OPTIONS": {
@@ -81,21 +82,18 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-STATICFILES_DIRS = []
-
-css_dir = BASE_DIR.parent / "css"
-frontend_static_dir = BASE_DIR.parent / "frontend" / "static"
-
-if css_dir.exists():
-    STATICFILES_DIRS.append(css_dir)
-
-if frontend_static_dir.exists():
-    STATICFILES_DIRS.append(frontend_static_dir)
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    }
+}
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
