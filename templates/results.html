@@ -1,18 +1,34 @@
-{% extends 'base.html' %}
-{% block title %}Results — Voting App{% endblock %}
-{% block content %}
-<section class="container py-6">
-  <div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3 mb-4">
-    <div>
-      <h2 class="mb-2">Live results</h2>
-      <p class="text-muted mb-1">This page refreshes automatically every 12 seconds.</p>
-      <small id="lastUpdated" class="text-muted">Last updated: —</small>
+<div class="voter-layout">
+  <aside class="voter-sidebar">
+    <div class="brand-box">
+      <img src="/static/logo.png" alt="JAGWA SPORTS" class="brand-logo">
+      <h3>JAGWA<span>SPORTS</span></h3>
     </div>
-    <a class="btn btn-primary" href="/vote/">Cast a vote</a>
-  </div>
-  <div id="results"></div>
-</section>
-{% endblock %}
-{% block page_js %}
-<script>window.pageInit && window.pageInit('results')</script>
-{% endblock %}
+
+    <nav class="voter-menu">
+      <a href="/">Dashboard</a>
+      <a href="/vote/">Vote</a>
+      <a href="/results/" class="active">My Votes</a>
+      <a href="/login/">My Profile</a>
+    </nav>
+  </aside>
+
+  <main class="voter-main">
+    <div class="voter-topbar">
+      <div>
+        <h1>My Votes</h1>
+        <p>Here are the candidates you selected.</p>
+      </div>
+
+      <div id="authStatus"></div>
+    </div>
+
+    <p id="lastUpdated" class="text-muted"></p>
+
+    <section id="results"></section>
+  </main>
+</div>
+
+<script>
+  window.pageInit('results');
+</script>

@@ -1,27 +1,34 @@
-{% extends 'base.html' %}
-{% block title %}Vote — Voting App{% endblock %}
-{% block content %}
-<section class="container py-6">
-  <div class="d-flex flex-column flex-lg-row gap-4 align-items-start">
-    <div class="flex-grow-1">
-      <div class="page-panel p-4 rounded-4 shadow-sm mb-4">
-        <h2 class="mb-2">Vote for your favorites</h2>
-        <p class="text-muted">Select one candidate for each position. Your identity is preserved during the voting flow.</p>
-        <p class="text-muted mb-0"><strong>Note:</strong> You can update your vote within 30 minutes of casting it. After 30 minutes, the vote becomes final.</p>
-      </div>
-      <div id="voteAlert"></div>
-      <div id="positions" class="vote-list"></div>
+<div class="voter-layout">
+  <aside class="voter-sidebar">
+    <div class="brand-box">
+      <img src="/static/logo.png" alt="JAGWA SPORTS" class="brand-logo">
+      <h3>JAGWA<span>SPORTS</span></h3>
     </div>
-    <aside class="info-panel p-4 rounded-4 shadow-sm bg-white">
-      <h5>Your voting profile</h5>
-      <div id="voteProfile" class="text-muted mt-3">Loading voter status…</div>
-      <div class="mt-4">
-        <a class="btn btn-outline-primary w-100" href="/login/">Edit profile</a>
+
+    <nav class="voter-menu">
+      <a href="/">Dashboard</a>
+      <a href="/vote/" class="active">Vote</a>
+      <a href="/results/">My Votes</a>
+      <a href="/login/">My Profile</a>
+    </nav>
+  </aside>
+
+  <main class="voter-main">
+    <div class="voter-topbar">
+      <div>
+        <h1>Vote for Your Candidates</h1>
+        <p>Please select one candidate for each position.</p>
       </div>
-    </aside>
-  </div>
-</section>
-{% endblock %}
-{% block page_js %}
-<script>window.pageInit && window.pageInit('vote')</script>
-{% endblock %}
+
+      <div id="authStatus"></div>
+    </div>
+
+    <div id="voteAlert" class="alert visually-hidden"></div>
+
+    <section id="positions"></section>
+  </main>
+</div>
+
+<script>
+  window.pageInit('vote');
+</script>

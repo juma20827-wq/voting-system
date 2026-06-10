@@ -1,20 +1,30 @@
-{% extends 'base.html' %}
-{% block title %}Vote Complete — Voting App{% endblock %}
-{% block content %}
-<section class="success-section text-center py-7 text-white">
-  <div class="container">
-    <div class="success-panel p-5 rounded-4 shadow-lg">
-      <h1 class="mb-3">Vote submitted</h1>
-      <p class="lead text-white-75 mb-4">Thank you for participating. Your vote has been recorded successfully.</p>
-      <p id="successNote" class="text-white-75 mb-4"></p>
-      <div class="d-flex justify-content-center gap-3 flex-wrap">
-        <a class="btn btn-light btn-lg" href="/results/">View results</a>
-        <a class="btn btn-outline-light btn-lg" href="/vote/">Vote again</a>
-      </div>
+<div class="voter-layout">
+  <aside class="voter-sidebar">
+    <div class="brand-box">
+      <img src="/static/logo.png" alt="JAGWA SPORTS" class="brand-logo">
+      <h3>JAGWA<span>SPORTS</span></h3>
     </div>
-  </div>
-</section>
-{% endblock %}
-{% block page_js %}
-<script>window.pageInit && window.pageInit('success')</script>
-{% endblock %}
+
+    <nav class="voter-menu">
+      <a href="/">Dashboard</a>
+      <a href="/vote/">Vote</a>
+      <a href="/results/" class="active">My Votes</a>
+      <a href="/login/">My Profile</a>
+    </nav>
+  </aside>
+
+  <main class="voter-main">
+    <div class="success-box">
+      <div class="success-icon">✓</div>
+      <h1>Vote Submitted Successfully!</h1>
+      <p id="successNote">Thank you for participating in the election.</p>
+
+      <a href="/results/" class="primary-action">View My Votes</a>
+      <a href="/" class="secondary-action">Back to Dashboard</a>
+    </div>
+  </main>
+</div>
+
+<script>
+  window.pageInit('success');
+</script>
