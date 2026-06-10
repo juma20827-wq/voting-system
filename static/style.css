@@ -1144,3 +1144,41 @@ button[type="submit"]:hover {
     display: block !important;
     color: #f0141e !important;
 }
+
+/* Candidate image fit fix */
+.candidate-photo {
+    width: 110px !important;
+    height: 130px !important;
+    border-radius: 14px !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    background: #e5e7eb !important;
+}
+
+.result-photo {
+    width: 74px !important;
+    height: 74px !important;
+    border-radius: 14px !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    background: #e5e7eb !important;
+}
+
+.admin-candidate-card img,
+.admin-candidate-placeholder {
+    width: 100% !important;
+    height: 150px !important;
+    border-radius: 14px !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    background: #e5e7eb !important;
+}
+
+#candidatesList img,
+#positionsList img {
+    width: 90px !important;
+    height: 90px !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    border-radius: 12px !important;
+}
