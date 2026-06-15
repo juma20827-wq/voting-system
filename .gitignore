@@ -35,3 +35,4 @@ frontend/build/
 *.backup*
 *.tmp
 backups_before_clean/
+backups_step2/
