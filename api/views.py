@@ -6,6 +6,7 @@ from django.conf import settings
 from django.db import transaction
 from django.db.models import Count
 from django.utils import timezone
+from django.utils.crypto import constant_time_compare
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 
@@ -25,6 +26,60 @@ from .serializers import (
 PHONE_REGEX = re.compile(r'^\+255[6-9]\d{8}$')
 
 
+# =====================================================
+# SECURITY HELPERS
+# =====================================================
+MAX_IMAGE_UPLOAD_SIZE = 3 * 1024 * 1024  # 3MB
+ALLOWED_IMAGE_CONTENT_TYPES = {
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+}
+
+
+def clean_admin_key(value):
+    if not value:
+        return ""
+
+    value = str(value).strip()
+    value = value.replace("Bearer ", "").replace("Token ", "").strip()
+    return value
+
+
+def is_valid_admin_key(value):
+    expected = str(getattr(settings, "ADMIN_API_KEY", "") or "")
+    supplied = clean_admin_key(value)
+
+    if not expected or not supplied:
+        return False
+
+    return constant_time_compare(supplied, expected)
+
+
+def get_admin_key_from_request(request):
+    return (
+        request.headers.get("X-Admin-Key")
+        or request.headers.get("Authorization")
+        or request.data.get("admin_key")
+    )
+
+
+def validate_uploaded_image(file):
+    if not file:
+        return "image file required"
+
+    content_type = getattr(file, "content_type", "")
+
+    if content_type not in ALLOWED_IMAGE_CONTENT_TYPES:
+        return "Only JPG, PNG, or WEBP images are allowed"
+
+    if file.size > MAX_IMAGE_UPLOAD_SIZE:
+        return "Image is too large. Maximum size is 3MB"
+
+    return None
+
+
+
 def get_candidate_image_url(candidate):
     url = ""
 
@@ -41,6 +96,7 @@ def get_candidate_image_url(candidate):
 
 
 class LoginView(APIView):
+    throttle_scope = "login"
     def post(self, request):
         name = request.data.get("name")
         phone = request.data.get("phone")
@@ -94,6 +150,7 @@ class LoginView(APIView):
 
 
 class PositionsView(APIView):
+    throttle_scope = "public"
     def get(self, request):
         qs = Position.objects.all().order_by("id")
         serializer = PositionSerializer(qs, many=True)
@@ -101,6 +158,7 @@ class PositionsView(APIView):
 
 
 class CandidatesByPositionView(APIView):
+    throttle_scope = "public"
     def get(self, request, position_id):
         qs = Candidate.objects.filter(
             position_id=position_id
@@ -120,6 +178,7 @@ class CandidatesByPositionView(APIView):
 
 
 class VoteView(APIView):
+    throttle_scope = "vote"
     def post(self, request):
         token = request.data.get("token")
         candidate_id = request.data.get("candidate_id")
@@ -197,13 +256,14 @@ class VoteView(APIView):
 
 
 class ResultsView(APIView):
+    throttle_scope = "results"
     def get(self, request):
         admin_key = (
             request.headers.get("X-Admin-Key")
-            or request.query_params.get("admin_key")
+            or request.headers.get("Authorization")
         )
 
-        if admin_key == getattr(settings, "ADMIN_API_KEY", "adminsecret"):
+        if is_valid_admin_key(admin_key):
             total_voters = Voter.objects.count()
             total_votes = Vote.objects.count()
 
@@ -333,14 +393,11 @@ class ResultsView(APIView):
 
 
 class AdminBaseView(APIView):
-    def _is_admin(self, request):
-        key = (
-            request.headers.get("X-Admin-Key")
-            or request.query_params.get("admin_key")
-            or request.data.get("admin_key")
-        )
+    throttle_scope = "admin"
 
-        return key == getattr(settings, "ADMIN_API_KEY", "adminsecret")
+    def _is_admin(self, request):
+        key = get_admin_key_from_request(request)
+        return is_valid_admin_key(key)
 
     def initial(self, request, *args, **kwargs):
         super().initial(request, *args, **kwargs)
@@ -407,6 +464,7 @@ class AdminCandidateView(AdminBaseView):
 
 
 class MeView(APIView):
+    throttle_scope = "results"
     def get(self, request):
         auth = request.headers.get("Authorization", "")
 
@@ -582,6 +640,8 @@ class WinnersView(AdminBaseView):
 
 
 class AdminUploadImageView(AdminBaseView):
+    throttle_scope = "admin"
+
     def post(self, request):
         candidate_id = (
             request.data.get("candidate_id")
@@ -596,6 +656,13 @@ class AdminUploadImageView(AdminBaseView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+        image_error = validate_uploaded_image(file)
+        if image_error:
+            return Response(
+                {"detail": image_error},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         try:
             candidate = Candidate.objects.get(pk=candidate_id)
         except Candidate.DoesNotExist:
@@ -604,27 +671,13 @@ class AdminUploadImageView(AdminBaseView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        filename = file.name
-        rel_dir = os.path.join("candidates", str(candidate_id))
-        rel_path = os.path.join(rel_dir, filename)
-
-        saved_path = default_storage.save(
-            rel_path,
-            ContentFile(file.read())
-        )
-
-        media_url = getattr(settings, "MEDIA_URL", "/media/")
-
-        candidate.image_url = os.path.join(
-            media_url,
-            saved_path
-        ).replace("\\", "/")
-
-        candidate.save(update_fields=["image_url"])
+        candidate.image = file
+        candidate.image_url = ""
+        candidate.save()
 
         return Response({
             "detail": "image uploaded",
-            "image_url": candidate.image_url
+            "image_url": get_candidate_image_url(candidate),
         })
 
 

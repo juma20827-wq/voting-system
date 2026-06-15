@@ -173,7 +173,7 @@
       }
 
       try {
-        const response = await fetch(API_BASE + "/admin/candidates/?admin_key=" + encodeURIComponent(key), {
+        const response = await fetch(API_BASE + "/admin/candidates/", {
           headers: {
             "X-Admin-Key": key
           }

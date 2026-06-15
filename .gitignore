@@ -1,8 +1,37 @@
-.venv/ 
-__pycache__/ 
-*.pyc 
-.env 
-media/ 
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.sqlite3
 db.sqlite3
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Secrets
+.env
+*.env
+
+# Django
+staticfiles/
+media/
+*.log
+
+# OS / IDE
 .DS_Store
-db.sqlite3
+.vscode/
+.idea/
+
+# Node / frontend
+node_modules/
+frontend/node_modules/
+frontend/build/
+
+# Backup files
+*.bak
+*.backup*
+*.tmp
+backups_before_clean/

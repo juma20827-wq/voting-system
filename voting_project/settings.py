@@ -8,16 +8,35 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-secret")
 
-# LOCAL DEVELOPMENT
-DEBUG = True
+def env_bool(name, default=False):
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.strip().lower() in ("1", "true", "yes", "on")
 
-ALLOWED_HOSTS = [
-    "24bia057.pythonanywhere.com",
-    "localhost",
-    "127.0.0.1",
-]
+
+def env_list(name, default=""):
+    value = os.getenv(name, default)
+    return [item.strip() for item in value.split(",") if item.strip()]
+
+
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
+
+DEBUG = env_bool("DJANGO_DEBUG", default=True)
+
+if not SECRET_KEY:
+    if DEBUG:
+        SECRET_KEY = "dev-only-change-this-secret-key"
+    else:
+        raise RuntimeError("DJANGO_SECRET_KEY must be set when DEBUG=False")
+
+
+ALLOWED_HOSTS = env_list(
+    "DJANGO_ALLOWED_HOSTS",
+    "localhost,127.0.0.1,24bia057.pythonanywhere.com"
+)
+
 
 INSTALLED_APPS = [
     "corsheaders",
@@ -31,6 +50,7 @@ INSTALLED_APPS = [
     "api",
 ]
 
+
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
@@ -43,7 +63,6 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = "voting_project.urls"
 
@@ -52,7 +71,6 @@ TEMPLATES = [
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
             BASE_DIR / "templates",
-            BASE_DIR.parent / "frontend" / "public",
         ],
         "APP_DIRS": True,
         "OPTIONS": {
@@ -68,22 +86,40 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "voting_project.wsgi.application"
 
+
 DATABASES = {
     "default": dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        conn_max_age=600,
     )
 }
 
-AUTH_PASSWORD_VALIDATORS = []
+
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "OPTIONS": {"min_length": 10},
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+    },
+]
+
 
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "Africa/Dar_es_Salaam"
 USE_I18N = True
 USE_TZ = True
 
+
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
-
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
@@ -96,16 +132,88 @@ STORAGES = {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
     },
     "staticfiles": {
-        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
 
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Kwa sasa local iwe rahisi. Admin page itatumia adminsecret.
-ADMIN_API_KEY = os.getenv("ADMIN_API_KEY", "adminsecret")
+
+ADMIN_API_KEY = os.getenv("ADMIN_API_KEY")
+if not ADMIN_API_KEY:
+    if DEBUG:
+        ADMIN_API_KEY = "adminsecret"
+    else:
+        raise RuntimeError("ADMIN_API_KEY must be set when DEBUG=False")
+
+
+# CORS: usiruhusu kila origin production
+CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOWED_ORIGINS = env_list(
+    "CORS_ALLOWED_ORIGINS",
+    "http://localhost:8000,http://127.0.0.1:8000,https://24bia057.pythonanywhere.com"
+)
+
+CSRF_TRUSTED_ORIGINS = env_list(
+    "CSRF_TRUSTED_ORIGINS",
+    "https://24bia057.pythonanywhere.com"
+)
+
 
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": (),
-    "DEFAULT_PERMISSION_CLASSES": (),
+    "DEFAULT_AUTHENTICATION_CLASSES": [],
+    "DEFAULT_PERMISSION_CLASSES": [],
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.AnonRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "120/min",
+    },
+}
+
+
+# Security headers
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = "DENY"
+SECURE_REFERRER_POLICY = "same-origin"
+
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = False
+
+SESSION_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_SAMESITE = "Lax"
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+if not DEBUG:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = env_bool("DJANGO_SECURE_SSL_REDIRECT", default=False)
+    SECURE_HSTS_SECONDS = int(os.getenv("SECURE_HSTS_SECONDS", "31536000"))
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool("SECURE_HSTS_INCLUDE_SUBDOMAINS", default=True)
+    SECURE_HSTS_PRELOAD = env_bool("SECURE_HSTS_PRELOAD", default=True)
+else:
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
+    SECURE_SSL_REDIRECT = False
+    SECURE_HSTS_SECONDS = 0
+
+# =====================================================
+# API RATE LIMITS
+# Protect APIs from spam/brute-force attempts
+# =====================================================
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [],
+    "DEFAULT_PERMISSION_CLASSES": [],
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.ScopedRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "login": "20/min",
+        "vote": "40/min",
+        "results": "60/min",
+        "public": "120/min",
+        "admin": "120/min",
+    },
 }
