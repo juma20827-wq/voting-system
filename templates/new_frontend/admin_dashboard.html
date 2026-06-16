@@ -1,0 +1,141 @@
+{% extends "new_frontend/base.html" %}
+{% load static %}
+
+{% block title %}JAGWA SPORTS | Admin Dashboard{% endblock %}
+{% block subtitle %}Admin Voting Control Panel{% endblock %}
+
+{% block nav %}
+<a href="/new-admin/" class="active">Admin</a>
+<a href="/vote/">Vote Page</a>
+<a href="/results/">Results</a>
+<a href="/jagwa-login/">Logout</a>
+{% endblock %}
+
+{% block top_cards %}
+<section class="top-cards">
+    <div class="top-card active" data-scroll="positionsPanel">
+        <div class="card-icon">🏆</div>
+        <h3>Manage Positions</h3>
+        <p>Add, view, and delete election positions.</p>
+    </div>
+
+    <div class="top-card" data-scroll="candidatesPanel">
+        <div class="card-icon">👥</div>
+        <h3>Manage Candidates</h3>
+        <p>Add candidates, upload photos, edit, and delete.</p>
+    </div>
+
+    <div class="top-card green" data-scroll="resultsPanel">
+        <div class="card-icon">📊</div>
+        <h3>Results & Winners</h3>
+        <p>View leading candidates and election reports.</p>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<div class="page-title">
+    <h2>Admin Dashboard</h2>
+    <p>Control positions, candidates, voters and results from one clean panel.</p>
+</div>
+
+<section class="panel-grid">
+
+    <!-- POSITIONS -->
+    <div class="panel" id="positionsPanel">
+        <h3>Manage Positions</h3>
+
+        <form id="newPositionForm" class="form-grid">
+            <div class="form-group full">
+                <label>Position Name</label>
+                <input id="newPositionName" type="text" placeholder="Example: President, Secretary, Captain">
+            </div>
+
+            <div class="form-group full">
+                <button class="btn-primary" type="submit">Add Position</button>
+            </div>
+        </form>
+
+        <div class="summary-box">
+            <span>Total Positions</span>
+            <strong id="newPositionCount">0</strong>
+        </div>
+
+        <div id="newPositionsList" class="clean-list"></div>
+    </div>
+
+    <!-- CANDIDATES -->
+    <div class="panel" id="candidatesPanel">
+        <h3>Manage Candidates</h3>
+
+        <form id="newCandidateForm" class="form-grid">
+            <input id="editingCandidateId" type="hidden">
+
+            <div class="form-group">
+                <label>Candidate Name</label>
+                <input id="newCandidateName" type="text" placeholder="Candidate full name">
+            </div>
+
+            <div class="form-group">
+                <label>Position</label>
+                <select id="newCandidatePosition">
+                    <option value="">Select position</option>
+                </select>
+            </div>
+
+            <div class="form-group full">
+                <label>Candidate Photo</label>
+                <input id="newCandidateImage" type="file" accept="image/*">
+            </div>
+
+            <div class="form-group full">
+                <label>Candidate Comments / Sifa</label>
+                <textarea id="newCandidateDescription" placeholder="Write candidate qualities, experience, leadership, discipline..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <button class="btn-primary" id="newCandidateSubmit" type="submit">Add Candidate</button>
+            </div>
+
+            <div class="form-group">
+                <button class="btn-danger" id="cancelCandidateEdit" type="button" style="display:none;">Cancel Edit</button>
+            </div>
+        </form>
+
+        <div class="summary-box">
+            <span>Total Candidates</span>
+            <strong id="newCandidateCount">0</strong>
+        </div>
+    </div>
+
+</section>
+
+<section class="panel" style="margin-top: 26px;">
+    <h3>Candidate List</h3>
+    <div id="newCandidatesList" class="candidate-list"></div>
+</section>
+
+<section class="panel-grid" style="margin-top: 26px;">
+
+    <div class="panel" id="resultsPanel">
+        <h3>Results & Winners</h3>
+
+        <button id="showWinnersBtn" class="btn-primary" type="button">Show Winners</button>
+
+        <div id="newWinnersList" class="candidate-list" style="margin-top: 18px;"></div>
+    </div>
+
+    <div class="panel">
+        <h3>Voters</h3>
+
+        <button id="loadVotersBtn" class="btn-secondary" type="button">Load Voters</button>
+
+        <div id="newVotersList" class="clean-list" style="margin-top: 18px;"></div>
+    </div>
+
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'new_ui/js/admin.js' %}?v=step4a" defer></script>
+{% endblock %}

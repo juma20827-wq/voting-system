@@ -5,6 +5,8 @@ from django.urls import path, include
 from django.views.generic import TemplateView
 
 urlpatterns = [
+    path('new-admin/', TemplateView.as_view(template_name='new_frontend/admin_dashboard.html'), name='new-admin'),
+
     path('', TemplateView.as_view(template_name='index.html'), name='home'),
     path('vote/', TemplateView.as_view(template_name='vote.html'), name='vote'),
     path('results/', TemplateView.as_view(template_name='results.html'), name='results'),
