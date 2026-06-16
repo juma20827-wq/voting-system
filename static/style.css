@@ -896,3 +896,69 @@ button:disabled,
     align-items: flex-start;
   }
 }
+/* =====================================================
+   FINAL IMAGE FIX: SHOW FULL CANDIDATE PHOTOS
+   Hii ni kwa admin page na fallback ya pages zote
+===================================================== */
+
+.candidate-item img,
+.candidate-left img,
+#candidatesList img,
+.candidate-photo,
+.result-photo,
+.candidate-card img {
+    object-fit: contain !important;
+    object-position: center center !important;
+    background: #f8fafc !important;
+    padding: 5px !important;
+    border-radius: 14px !important;
+    box-sizing: border-box !important;
+}
+
+/* Admin candidate image */
+.candidate-item img,
+.candidate-left img,
+#candidatesList img {
+    width: 96px !important;
+    height: 96px !important;
+    min-width: 96px !important;
+    max-width: 96px !important;
+}
+
+/* Vote page candidate image */
+.candidate-photo,
+.candidate-card img {
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    object-fit: contain !important;
+}
+
+/* Result page image */
+.result-photo {
+    width: 76px !important;
+    height: 76px !important;
+    min-width: 76px !important;
+}
+
+/* Mobile image fix */
+@media (max-width: 768px) {
+    .candidate-item img,
+    .candidate-left img,
+    #candidatesList img {
+        width: 90px !important;
+        height: 90px !important;
+        min-width: 90px !important;
+        max-width: 90px !important;
+        object-fit: contain !important;
+    }
+
+    .candidate-photo,
+    .candidate-card img {
+        width: 100% !important;
+        height: auto !important;
+        max-height: none !important;
+        object-fit: contain !important;
+    }
+}
+
