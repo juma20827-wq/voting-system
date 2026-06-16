@@ -1,0 +1,379 @@
+/* =====================================================
+   JAGWA SPORTS - ADMIN DASHBOARD UI
+   Step 4B: layout, sidebar, cards
+===================================================== */
+
+:root {
+    --admin-dark: #071117;
+    --admin-dark-2: #101820;
+    --admin-teal: #007d87;
+    --admin-teal-2: #00a6b3;
+    --admin-red: #c5161d;
+    --admin-bg: #f3f7fb;
+    --admin-card: #ffffff;
+    --admin-text: #0f172a;
+    --admin-muted: #64748b;
+    --admin-line: #e2e8f0;
+    --admin-shadow: 0 18px 45px rgba(15, 23, 42, 0.10);
+    --admin-radius: 22px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background:
+        radial-gradient(circle at top right, rgba(0, 166, 179, 0.14), transparent 28%),
+        linear-gradient(135deg, #eef6f8, #f8fafc) !important;
+    color: var(--admin-text) !important;
+}
+
+/* Main wrapper */
+.admin-wrapper,
+.dashboard-wrapper,
+.admin-layout {
+    min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar,
+.admin-sidebar {
+    background:
+        linear-gradient(180deg, rgba(7, 17, 23, 0.99), rgba(16, 24, 32, 0.99)),
+        radial-gradient(circle at bottom right, rgba(197, 22, 29, 0.22), transparent 45%) !important;
+    color: #ffffff !important;
+}
+
+/* Sidebar links */
+.sidebar a,
+.admin-sidebar a {
+    border-radius: 16px !important;
+    font-weight: 900 !important;
+    transition: 0.18s ease !important;
+}
+
+.sidebar a:hover,
+.sidebar a.active,
+.admin-sidebar a:hover,
+.admin-sidebar a.active {
+    background: rgba(0, 166, 179, 0.20) !important;
+    color: #ffffff !important;
+}
+
+/* Main content */
+.main,
+.admin-main,
+.content,
+.dashboard-main {
+    background: transparent !important;
+}
+
+/* Sections/cards */
+.section,
+.card,
+.admin-card,
+.dashboard-card {
+    background: var(--admin-card) !important;
+    border: 1px solid var(--admin-line) !important;
+    border-radius: var(--admin-radius) !important;
+    box-shadow: var(--admin-shadow) !important;
+    padding: 24px !important;
+    margin-bottom: 24px !important;
+}
+
+.section h2,
+.card h2,
+.admin-card h2 {
+    margin-top: 0 !important;
+    color: var(--admin-text) !important;
+    font-weight: 950 !important;
+}
+
+.section p,
+.card p,
+.admin-card p {
+    color: var(--admin-muted) !important;
+}
+
+/* Topbar */
+.topbar,
+.admin-topbar {
+    background: transparent !important;
+    margin-bottom: 24px !important;
+}
+
+.topbar h1,
+.admin-topbar h1 {
+    font-weight: 950 !important;
+    color: var(--admin-text) !important;
+}
+
+/* Logo */
+.logo img,
+.brand-logo,
+.sidebar img {
+    object-fit: contain !important;
+}
+
+/* =====================================================
+   Step 4C: Admin buttons, forms, inputs
+===================================================== */
+
+/* Forms */
+.form-row,
+.admin-form,
+.section form {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 14px !important;
+    align-items: end !important;
+}
+
+.form-row input,
+.form-row select,
+.form-row textarea,
+.section input,
+.section select,
+.section textarea {
+    width: 100% !important;
+    border: 1px solid var(--admin-line) !important;
+    border-radius: 16px !important;
+    padding: 13px 14px !important;
+    font-family: inherit !important;
+    outline: none !important;
+    background: #ffffff !important;
+    color: var(--admin-text) !important;
+    font-size: 14px !important;
+}
+
+.form-row textarea,
+.section textarea {
+    grid-column: 1 / -1 !important;
+    min-height: 96px !important;
+    resize: vertical !important;
+}
+
+.form-row input:focus,
+.form-row select:focus,
+.form-row textarea:focus,
+.section input:focus,
+.section select:focus,
+.section textarea:focus {
+    border-color: var(--admin-teal) !important;
+    box-shadow: 0 0 0 4px rgba(0, 125, 135, 0.14) !important;
+}
+
+/* Buttons */
+.btn-main,
+button.btn-main,
+.section button,
+.admin-btn {
+    border: none !important;
+    background: var(--admin-teal) !important;
+    color: #ffffff !important;
+    border-radius: 14px !important;
+    padding: 12px 16px !important;
+    font-weight: 900 !important;
+    cursor: pointer !important;
+    transition: 0.18s ease !important;
+}
+
+.btn-main:hover,
+button.btn-main:hover,
+.section button:hover,
+.admin-btn:hover {
+    transform: translateY(-2px) !important;
+    background: var(--admin-teal-2) !important;
+}
+
+/* Danger buttons */
+.btn-danger,
+.delete-candidate-btn,
+.delete-position-btn,
+#resetElection {
+    background: var(--admin-red) !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 14px !important;
+    padding: 12px 16px !important;
+    font-weight: 900 !important;
+    cursor: pointer !important;
+}
+
+.btn-danger:hover,
+.delete-candidate-btn:hover,
+.delete-position-btn:hover,
+#resetElection:hover {
+    background: #991b1b !important;
+    transform: translateY(-2px) !important;
+}
+
+/* Small action buttons */
+.upload-btn,
+.edit-candidate-btn,
+.delete-candidate-btn,
+.delete-position-btn {
+    font-size: 13px !important;
+    padding: 10px 13px !important;
+    border-radius: 12px !important;
+    white-space: nowrap !important;
+}
+
+/* Candidate action area */
+.candidate-actions {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 8px !important;
+    flex-wrap: wrap !important;
+}
+
+/* Mobile forms */
+@media (max-width: 760px) {
+    .form-row,
+    .admin-form,
+    .section form {
+        grid-template-columns: 1fr !important;
+    }
+
+    .candidate-actions {
+        justify-content: flex-start !important;
+        width: 100% !important;
+    }
+
+    .candidate-actions button {
+        flex: 1 1 auto !important;
+    }
+}
+
+/* =====================================================
+   Step 4C: Admin buttons, forms, inputs
+===================================================== */
+
+/* Forms */
+.form-row,
+.admin-form,
+.section form {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 14px !important;
+    align-items: end !important;
+}
+
+.form-row input,
+.form-row select,
+.form-row textarea,
+.section input,
+.section select,
+.section textarea {
+    width: 100% !important;
+    border: 1px solid var(--admin-line) !important;
+    border-radius: 16px !important;
+    padding: 13px 14px !important;
+    font-family: inherit !important;
+    outline: none !important;
+    background: #ffffff !important;
+    color: var(--admin-text) !important;
+    font-size: 14px !important;
+}
+
+.form-row textarea,
+.section textarea {
+    grid-column: 1 / -1 !important;
+    min-height: 96px !important;
+    resize: vertical !important;
+}
+
+.form-row input:focus,
+.form-row select:focus,
+.form-row textarea:focus,
+.section input:focus,
+.section select:focus,
+.section textarea:focus {
+    border-color: var(--admin-teal) !important;
+    box-shadow: 0 0 0 4px rgba(0, 125, 135, 0.14) !important;
+}
+
+/* Buttons */
+.btn-main,
+button.btn-main,
+.section button,
+.admin-btn {
+    border: none !important;
+    background: var(--admin-teal) !important;
+    color: #ffffff !important;
+    border-radius: 14px !important;
+    padding: 12px 16px !important;
+    font-weight: 900 !important;
+    cursor: pointer !important;
+    transition: 0.18s ease !important;
+}
+
+.btn-main:hover,
+button.btn-main:hover,
+.section button:hover,
+.admin-btn:hover {
+    transform: translateY(-2px) !important;
+    background: var(--admin-teal-2) !important;
+}
+
+/* Danger buttons */
+.btn-danger,
+.delete-candidate-btn,
+.delete-position-btn,
+#resetElection {
+    background: var(--admin-red) !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 14px !important;
+    padding: 12px 16px !important;
+    font-weight: 900 !important;
+    cursor: pointer !important;
+}
+
+.btn-danger:hover,
+.delete-candidate-btn:hover,
+.delete-position-btn:hover,
+#resetElection:hover {
+    background: #991b1b !important;
+    transform: translateY(-2px) !important;
+}
+
+/* Small action buttons */
+.upload-btn,
+.edit-candidate-btn,
+.delete-candidate-btn,
+.delete-position-btn {
+    font-size: 13px !important;
+    padding: 10px 13px !important;
+    border-radius: 12px !important;
+    white-space: nowrap !important;
+}
+
+/* Candidate action area */
+.candidate-actions {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 8px !important;
+    flex-wrap: wrap !important;
+}
+
+/* Mobile forms */
+@media (max-width: 760px) {
+    .form-row,
+    .admin-form,
+    .section form {
+        grid-template-columns: 1fr !important;
+    }
+
+    .candidate-actions {
+        justify-content: flex-start !important;
+        width: 100% !important;
+    }
+
+    .candidate-actions button {
+        flex: 1 1 auto !important;
+    }
+}
