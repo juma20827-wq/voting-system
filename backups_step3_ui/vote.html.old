@@ -7,7 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" href="{% static 'style.css' %}">
-    <link rel="stylesheet" href="{% static 'voter.css' %}?v=step3c">
     <script src="{% static 'app.js' %}" defer></script>
 
     <style>
@@ -64,26 +63,24 @@
         }
 
         .candidate-photo {
-            width: 132px !important;
-            height: 150px !important;
-            min-width: 132px !important;
-            max-width: 132px !important;
-            object-fit: contain !important;
-            object-position: center center !important;
+            width: 110px !important;
+            height: 130px !important;
+            min-width: 110px !important;
+            max-width: 110px !important;
+            object-fit: cover !important;
+            object-position: center !important;
             border-radius: 14px !important;
-            background: #f1f5f9 !important;
-            border: 1px solid #e2e8f0 !important;
-            padding: 6px !important;
+            background: #e5e7eb !important;
         }
 
         .candidate-card {
-            overflow: visible !important;
+            overflow: hidden !important;
         }
 
         .candidate-card img,
         #positions img {
-            object-fit: contain !important;
-            object-position: center center !important;
+            object-fit: cover !important;
+            object-position: center !important;
         }
 
         @media (max-width: 640px) {

@@ -23,7 +23,7 @@ def env_list(name, default=""):
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
-DEBUG = env_bool("DJANGO_DEBUG", default=True)
+DEBUG = env_bool("DJANGO_DEBUG", default=False)
 
 if not SECRET_KEY:
     if DEBUG:
@@ -142,10 +142,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 ADMIN_API_KEY = os.getenv("ADMIN_API_KEY")
 if not ADMIN_API_KEY:
-    if DEBUG:
-        ADMIN_API_KEY = "adminsecret"
-    else:
-        raise RuntimeError("ADMIN_API_KEY must be set when DEBUG=False")
+    raise RuntimeError("ADMIN_API_KEY must be set")
 
 
 # CORS: usiruhusu kila origin production

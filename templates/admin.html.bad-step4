@@ -272,13 +272,11 @@
 
     .candidate-left img,
     .no-image {
-      width: 88px;
-      height: 104px;
-      object-fit: contain;
-      object-position: center;
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
       border-radius: 12px;
-      background: #f1f5f9;
-      border: 1px solid #e2e8f0;
+      background: #e5e7eb;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -286,32 +284,6 @@
       font-size: 12px;
       font-weight: 800;
       flex-shrink: 0;
-    }
-
-    .position-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .item-actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-
-    .btn-light {
-      background: #e8eef8;
-      color: #1e2a78;
-    }
-
-    .btn-small {
-      padding: 9px 12px;
-      border-radius: 10px;
-      font-size: 13px;
-      margin: 0;
     }
 
     .winner-grid {
@@ -333,11 +305,9 @@
     .winner-placeholder {
       width: 100%;
       height: 170px;
-      object-fit: contain;
-      object-position: center;
+      object-fit: cover;
       border-radius: 14px;
-      background: #f1f5f9;
-      border: 1px solid #e2e8f0;
+      background: #e5e7eb;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -449,6 +419,7 @@
       }
     }
   </style>
+    <link rel="stylesheet" href="{% static 'admin.css' %}?v=step4e">
 </head>
 
 <body>
@@ -557,8 +528,6 @@
 
   <script>
     const API_BASE = "/api";
-    let latestPositions = [];
-    let latestCandidates = [];
 
     if (!sessionStorage.getItem("jagwaAdminKey")) {
       window.location.href = "/jagwa-login/";
@@ -610,10 +579,9 @@
 
     async function loadPositions() {
       try {
-        const data = await apiFetch("/admin/positions/");
+        const data = await apiFetch("/positions/");
         const list = document.getElementById("positionsList");
         const select = document.getElementById("candidatePosition");
-        latestPositions = Array.isArray(data) ? data : [];
 
         list.innerHTML = "";
         select.innerHTML = "";
@@ -628,19 +596,7 @@
 
         data.forEach(pos => {
           const li = document.createElement("li");
-          li.innerHTML = `
-            <div class="position-item">
-              <div>
-                <strong>${safe(pos.name)}</strong><br>
-                <small>ID: ${pos.id}</small>
-              </div>
-
-              <div class="item-actions">
-                <button class="btn-light btn-small edit-position-btn" type="button" data-id="${pos.id}">Edit</button>
-                <button class="btn-danger btn-small delete-position-btn" type="button" data-id="${pos.id}">Delete</button>
-              </div>
-            </div>
-          `;
+          li.textContent = `${pos.name} (ID: ${pos.id})`;
           list.appendChild(li);
 
           const option = document.createElement("option");
@@ -657,7 +613,6 @@
       try {
         const data = await apiFetch("/admin/candidates/");
         const list = document.getElementById("candidatesList");
-        latestCandidates = Array.isArray(data) ? data : [];
 
         list.innerHTML = "";
 
@@ -686,11 +641,7 @@
                 </div>
               </div>
 
-              <div class="item-actions">
-                <button class="btn-main btn-small upload-btn" type="button" data-id="${c.id}">Upload Image</button>
-                <button class="btn-light btn-small edit-candidate-btn" type="button" data-id="${c.id}">Edit</button>
-                <button class="btn-danger btn-small delete-candidate-btn" type="button" data-id="${c.id}">Delete</button>
-              </div>
+              <button class="btn-main upload-btn" type="button" data-id="${c.id}">Upload Image</button>
             </div>
           `;
 
@@ -734,125 +685,6 @@
         method: "POST",
         body: form
       });
-    }
-
-    async function editPosition(positionId) {
-      const position = latestPositions.find(p => String(p.id) === String(positionId));
-      if (!position) return;
-
-      const name = prompt("Edit position name:", position.name || "");
-      if (name === null) return;
-
-      const cleanName = name.trim();
-      if (!cleanName) {
-        alert("Position name cannot be empty.");
-        return;
-      }
-
-      try {
-        await apiFetch(`/admin/positions/${position.id}/`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: cleanName,
-            description: position.description || ""
-          })
-        });
-
-        await loadPositions();
-        await loadCandidates();
-        alert("Position updated");
-      } catch (error) {
-        alert(error.message);
-      }
-    }
-
-    async function deletePosition(positionId) {
-      const position = latestPositions.find(p => String(p.id) === String(positionId));
-      if (!position) return;
-
-      if (!confirm(`Delete position "${position.name}"? This is allowed only when it has no votes.`)) {
-        return;
-      }
-
-      try {
-        await apiFetch(`/admin/positions/${position.id}/`, {
-          method: "DELETE"
-        });
-
-        await loadPositions();
-        await loadCandidates();
-        alert("Position deleted");
-      } catch (error) {
-        alert(error.message);
-      }
-    }
-
-    async function editCandidate(candidateId) {
-      const candidate = latestCandidates.find(c => String(c.id) === String(candidateId));
-      if (!candidate) return;
-
-      const name = prompt("Edit candidate name:", candidate.name || "");
-      if (name === null) return;
-
-      const cleanName = name.trim();
-      if (!cleanName) {
-        alert("Candidate name cannot be empty.");
-        return;
-      }
-
-      const positionHelp = latestPositions
-        .map(pos => `${pos.id}: ${pos.name}`)
-        .join("\n");
-      const positionId = prompt(
-        `Enter position ID for this candidate:\n\n${positionHelp}`,
-        candidate.position || ""
-      );
-      if (positionId === null) return;
-
-      const positionExists = latestPositions.some(pos => String(pos.id) === String(positionId).trim());
-      if (!positionExists) {
-        alert("Invalid position ID.");
-        return;
-      }
-
-      try {
-        await apiFetch(`/admin/candidates/${candidate.id}/`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: cleanName,
-            position_id: String(positionId).trim(),
-            description: candidate.description || "",
-            image_url: candidate.image_url || ""
-          })
-        });
-
-        await loadCandidates();
-        alert("Candidate updated");
-      } catch (error) {
-        alert(error.message);
-      }
-    }
-
-    async function deleteCandidate(candidateId) {
-      const candidate = latestCandidates.find(c => String(c.id) === String(candidateId));
-      if (!candidate) return;
-
-      if (!confirm(`Delete candidate "${candidate.name}"? This is allowed only when they have no votes.`)) {
-        return;
-      }
-
-      try {
-        await apiFetch(`/admin/candidates/${candidate.id}/`, {
-          method: "DELETE"
-        });
-
-        await loadCandidates();
-        alert("Candidate deleted");
-      } catch (error) {
-        alert(error.message);
-      }
     }
 
     document.getElementById("posForm").addEventListener("submit", async function (e) {
@@ -918,27 +750,7 @@
       }
     });
 
-    document.getElementById("positionsList").addEventListener("click", function (e) {
-      if (e.target.classList.contains("edit-position-btn")) {
-        editPosition(e.target.dataset.id);
-      }
-
-      if (e.target.classList.contains("delete-position-btn")) {
-        deletePosition(e.target.dataset.id);
-      }
-    });
-
     document.getElementById("candidatesList").addEventListener("click", function (e) {
-      if (e.target.classList.contains("edit-candidate-btn")) {
-        editCandidate(e.target.dataset.id);
-        return;
-      }
-
-      if (e.target.classList.contains("delete-candidate-btn")) {
-        deleteCandidate(e.target.dataset.id);
-        return;
-      }
-
       if (!e.target.classList.contains("upload-btn")) return;
 
       const candidateId = e.target.dataset.id;

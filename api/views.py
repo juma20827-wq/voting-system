@@ -3,12 +3,10 @@ import re
 import os
 
 from django.conf import settings
-from django.db import transaction
+from django.db import IntegrityError, transaction
 from django.db.models import Count
 from django.utils import timezone
 from django.utils.crypto import constant_time_compare
-from django.core.files.base import ContentFile
-from django.core.files.storage import default_storage
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -519,6 +517,70 @@ class AdminPositionView(AdminBaseView):
         )
 
 
+class AdminPositionDetailView(AdminBaseView):
+    def patch(self, request, position_id):
+        try:
+            position = Position.objects.get(pk=position_id)
+        except Position.DoesNotExist:
+            return Response(
+                {"detail": "position not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        name = request.data.get("name")
+        description = request.data.get("description")
+
+        if name is not None:
+            name = str(name).strip()
+            if not name:
+                return Response(
+                    {"detail": "position name cannot be empty"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            position.name = name
+
+        if description is not None:
+            position.description = description
+
+        try:
+            position.save()
+        except IntegrityError:
+            return Response(
+                {"detail": "position with this name already exists"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        return Response({
+            "id": position.id,
+            "name": position.name,
+            "description": position.description or "",
+        })
+
+    def delete(self, request, position_id):
+        try:
+            position = Position.objects.get(pk=position_id)
+        except Position.DoesNotExist:
+            return Response(
+                {"detail": "position not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        vote_count = Vote.objects.filter(position=position).count()
+        if vote_count:
+            return Response(
+                {
+                    "detail": "Cannot delete a position that already has votes. Reset the election first if you really need to remove it."
+                },
+                status=status.HTTP_409_CONFLICT
+            )
+
+        position.delete()
+
+        return Response({
+            "detail": "position deleted"
+        })
+
+
 class AdminCandidateDetailView(AdminBaseView):
     def patch(self, request, candidate_id):
         try:
@@ -534,7 +596,13 @@ class AdminCandidateDetailView(AdminBaseView):
         description = request.data.get("description")
         image_url = request.data.get("image_url")
 
-        if name:
+        if name is not None:
+            name = str(name).strip()
+            if not name:
+                return Response(
+                    {"detail": "candidate name cannot be empty"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
             candidate.name = name
 
         if description is not None:
@@ -552,7 +620,13 @@ class AdminCandidateDetailView(AdminBaseView):
         if image_url is not None:
             candidate.image_url = image_url
 
-        candidate.save()
+        try:
+            candidate.save()
+        except IntegrityError:
+            return Response(
+                {"detail": "candidate with this name already exists for this position"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         return Response({
             "id": candidate.id,
@@ -570,6 +644,15 @@ class AdminCandidateDetailView(AdminBaseView):
             return Response(
                 {"detail": "candidate not found"},
                 status=status.HTTP_404_NOT_FOUND
+            )
+
+        vote_count = Vote.objects.filter(candidate=candidate).count()
+        if vote_count:
+            return Response(
+                {
+                    "detail": "Cannot delete a candidate that already has votes. Reset the election first if you really need to remove them."
+                },
+                status=status.HTTP_409_CONFLICT
             )
 
         candidate.delete()
