@@ -458,3 +458,116 @@ textarea {
         background: #f2f4f7;
     }
 }
+
+/* =====================================================
+   JAGWA PREMIUM BACKGROUND + LOGO FIX
+===================================================== */
+
+body {
+    background:
+        radial-gradient(circle at top left, rgba(40, 53, 147, 0.18), transparent 32%),
+        radial-gradient(circle at top right, rgba(229, 20, 33, 0.10), transparent 28%),
+        linear-gradient(135deg, #f7f9ff 0%, #eef3ff 45%, #f8fafc 100%) !important;
+}
+
+.jagwa-header {
+    background: rgba(255, 255, 255, 0.92) !important;
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(216, 222, 234, 0.8);
+}
+
+.logo-box {
+    background: #ffffff !important;
+    border: 1px solid #d8deea !important;
+    box-shadow: 0 12px 32px rgba(16, 24, 40, 0.14) !important;
+}
+
+.logo-box img {
+    object-fit: contain !important;
+    filter: none !important;
+}
+
+.top-card,
+.panel,
+.clean-item,
+.candidate-row {
+    background: rgba(255, 255, 255, 0.96) !important;
+    border: 1px solid rgba(216, 222, 234, 0.9) !important;
+}
+
+.page-title h2 {
+    color: #111827 !important;
+}
+
+.page-title h2::after {
+    content: "";
+    display: block;
+    width: 78px;
+    height: 5px;
+    background: linear-gradient(90deg, #e51421, #283593);
+    border-radius: 20px;
+    margin-top: 10px;
+}
+
+.card-icon {
+    box-shadow: 0 10px 25px rgba(40, 53, 147, 0.25);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #283593, #16227a) !important;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #e51421, #b80f18) !important;
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #007d87, #005f66) !important;
+}
+
+/* =====================================================
+   CIRCLE LOGO BOX
+===================================================== */
+
+.logo-box {
+    width: 78px !important;
+    height: 78px !important;
+    border-radius: 50% !important;
+    background: #ffffff !important;
+    border: 2px solid rgba(40, 53, 147, 0.18) !important;
+    box-shadow: 0 14px 35px rgba(16, 24, 40, 0.16) !important;
+    padding: 10px !important;
+    overflow: hidden !important;
+}
+
+.logo-box img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+}
+
+@media (max-width: 520px) {
+    .logo-box {
+        width: 62px !important;
+        height: 62px !important;
+        padding: 8px !important;
+    }
+}
+
+/* =====================================================
+   FINAL DARK CIRCLE LOGO
+   Black circle + logo visible without changing original file
+===================================================== */
+
+.logo-box {
+    background: #050505 !important;
+    border: 2px solid rgba(229, 20, 33, 0.45) !important;
+    box-shadow:
+        0 14px 35px rgba(16, 24, 40, 0.22),
+        0 0 0 6px rgba(40, 53, 147, 0.08) !important;
+}
+
+.logo-box img {
+    filter: invert(1) brightness(1.15) contrast(1.1) !important;
+    mix-blend-mode: screen !important;
+}
