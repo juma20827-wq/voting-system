@@ -662,6 +662,25 @@ class AdminCandidateDetailView(AdminBaseView):
         })
 
 
+
+class AdminPositionDetailView(AdminBaseView):
+    def delete(self, request, position_id):
+        try:
+            position = Position.objects.get(pk=position_id)
+        except Position.DoesNotExist:
+            return Response(
+                {"detail": "position not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        name = position.name
+        position.delete()
+
+        return Response({
+            "detail": f"Position '{name}' deleted successfully"
+        })
+
+
 class AdminUserView(AdminBaseView):
     def get(self, request):
         qs = Voter.objects.all().order_by("-created_at")

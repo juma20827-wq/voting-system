@@ -1,0 +1,149 @@
+{% extends "jagwa/base.html" %}
+{% load static %}
+
+{% block title %}JAGWA SPORTS | Best Goalkeeper Award{% endblock %}
+{% block subtitle %}Best Goalkeeper Award{% endblock %}
+
+{% block nav %}
+<a href="/" class="active">Home</a>
+<a href="/vote/">Vote</a>
+<a href="/my-vote/">My Vote</a>
+<a href="/results/">Results</a>
+<a href="/login/" class="nav-btn">Login</a>
+{% endblock %}
+
+{% block content %}
+
+<section class="hero page-wrap">
+
+    <div class="hero-content">
+        <div class="award-badge">JAGWA SPORTS VOTING</div>
+
+        <h2>
+            BEST GOALKEEPER
+            <span>AWARD 2026</span>
+        </h2>
+
+        <p>
+            Vote for the best goalkeeper of the season. Support the goalkeeper
+            with the best saves, discipline, confidence and leadership.
+        </p>
+
+        <div class="hero-actions">
+            <a href="/login/" class="btn btn-gold">
+                Start Voting →
+            </a>
+
+            <a href="/results/" class="btn btn-dark">
+                View Results 📊
+            </a>
+        </div>
+    </div>
+
+    <div class="hero-visual">
+        <div class="keeper-card">
+            <div class="keeper-number">1</div>
+            <div class="keeper-glow"></div>
+            <div class="football">⚽</div>
+        </div>
+    </div>
+
+</section>
+
+<section class="stats-strip page-wrap">
+    <div class="stat-box">
+        <strong id="homeCategoryCount">1</strong>
+        <span>Category</span>
+    </div>
+
+    <div class="stat-box">
+        <strong id="homeNomineeCount">0</strong>
+        <span>Goalkeepers</span>
+    </div>
+
+    <div class="stat-box">
+        <strong id="homeVotesCount">0</strong>
+        <span>Votes Cast</span>
+    </div>
+
+    <div class="stat-box">
+        <strong>100%</strong>
+        <span>Secure</span>
+    </div>
+</section>
+
+<section class="info-section page-wrap">
+
+    <div class="section-title">
+        <small>Celebrating Excellence</small>
+        <h2>Vote with <span>Confidence</span></h2>
+        <p>
+            This voting portal is designed for JAGWA SPORTS Best Goalkeeper Award.
+            Each voter can vote once, and the system records votes securely.
+        </p>
+    </div>
+
+    <div class="feature-grid">
+        <div class="feature-card">
+            <div class="feature-icon">🧤</div>
+            <h3>Best Goalkeeper</h3>
+            <p>Choose the goalkeeper who performed best this season.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">🔐</div>
+            <h3>One Person, One Vote</h3>
+            <p>The system helps prevent repeated voting for the same category.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">📱</div>
+            <h3>Mobile Friendly</h3>
+            <p>Easy to use on phones, tablets and computers.</p>
+        </div>
+    </div>
+
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.querySelector('.mobile-nav a[data-page="home"]')?.classList.add('active');
+
+async function loadHomeStats() {
+    try {
+        const positionsRes = await fetch("/api/positions/");
+        const positions = await positionsRes.json();
+
+        const categoryCount = document.getElementById("homeCategoryCount");
+        if (categoryCount && Array.isArray(positions)) {
+            categoryCount.textContent = positions.length;
+        }
+
+        let totalGoalkeepers = 0;
+
+        if (Array.isArray(positions)) {
+            for (const pos of positions) {
+                try {
+                    const res = await fetch(`/api/positions/${pos.id}/candidates/`);
+                    const candidates = await res.json();
+                    if (Array.isArray(candidates)) {
+                        totalGoalkeepers += candidates.length;
+                    }
+                } catch (e) {}
+            }
+        }
+
+        const nomineeCount = document.getElementById("homeNomineeCount");
+        if (nomineeCount) {
+            nomineeCount.textContent = totalGoalkeepers;
+        }
+    } catch (error) {
+        console.warn("Home stats failed:", error);
+    }
+}
+
+loadHomeStats();
+</script>
+{% endblock %}
