@@ -36,3 +36,6 @@ frontend/build/
 *.tmp
 backups_before_clean/
 backups_step2/
+
+# local backups
+backups_*/
