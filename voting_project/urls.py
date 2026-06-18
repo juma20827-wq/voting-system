@@ -5,18 +5,15 @@ from django.urls import path, include
 from django.views.generic import TemplateView
 
 urlpatterns = [
-    path('new-admin/', TemplateView.as_view(template_name='new_frontend/admin_dashboard.html'), name='new-admin'),
-
-    path('', TemplateView.as_view(template_name='index.html'), name='home'),
-    path('vote/', TemplateView.as_view(template_name='vote.html'), name='vote'),
-    path('results/', TemplateView.as_view(template_name='results.html'), name='results'),
-    path('login/', TemplateView.as_view(template_name='login.html'), name='login'),
-    path('success/', TemplateView.as_view(template_name='success.html'), name='success'),
-
+    path('', TemplateView.as_view(template_name='jagwa/home.html'), name='jagwa-home'),
+    path('login/', TemplateView.as_view(template_name='jagwa/login.html'), name='jagwa-login-new'),
+    path('vote/', TemplateView.as_view(template_name='jagwa/vote.html'), name='jagwa-vote'),
+    path('success/', TemplateView.as_view(template_name='jagwa/success.html'), name='jagwa-success'),
+    path('my-vote/', TemplateView.as_view(template_name='jagwa/my_vote.html'), name='jagwa-my-vote'),
+    path('results/', TemplateView.as_view(template_name='jagwa/results.html'), name='jagwa-results'),
+    path('jagwa-control/', TemplateView.as_view(template_name='jagwa/admin.html'), name='jagwa-admin-new'),
     # Custom admin login and panel
     path('jagwa-login/', TemplateView.as_view(template_name='admin_login.html'), name='admin_login'),
-    path('jagwa-control/', TemplateView.as_view(template_name='admin.html'), name='admin_panel'),
-
     # Django admin ya kawaida
     path('admin/', admin.site.urls),
 

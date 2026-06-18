@@ -1,0 +1,69 @@
+{% extends "jagwa/base.html" %}
+{% load static %}
+
+{% block title %}JAGWA SPORTS | Login{% endblock %}
+{% block subtitle %}Voter Access{% endblock %}
+
+{% block nav %}
+<a href="/">Home</a>
+<a href="/vote/">Vote</a>
+<a href="/my-vote/">My Vote</a>
+<a href="/results/">Results</a>
+<a href="/login/" class="nav-btn active">Login</a>
+{% endblock %}
+
+{% block content %}
+<section class="login-page page-wrap">
+
+    <div class="login-info">
+        <div class="award-badge">VOTER ACCESS</div>
+
+        <h2>
+            Login to Vote
+            <span>Best Goalkeeper</span>
+        </h2>
+
+        <p>
+            Enter your voter details to continue. Your vote will be saved securely
+            and you can only vote once for the Best Goalkeeper category.
+        </p>
+
+        <div class="login-points">
+            <div>✅ One voter, one vote</div>
+            <div>🧤 Best Goalkeeper Award</div>
+            <div>📱 Mobile friendly voting</div>
+        </div>
+    </div>
+
+    <div class="form-card login-card">
+        <h3 class="form-title">Voter Login</h3>
+        <p class="form-subtitle">Use your name and phone number to access voting.</p>
+
+        <form id="loginForm" class="form-grid">
+            <div class="form-group">
+                <label>Full Name</label>
+                <input id="fullName" type="text" placeholder="Enter your full name" autocomplete="name">
+            </div>
+
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input id="phoneNumber" type="tel" placeholder="Example: 07xxxxxxxx" autocomplete="tel">
+            </div>
+
+            <button class="btn btn-gold" type="submit" id="loginBtn">
+                Continue to Vote →
+            </button>
+
+            <p id="loginMessage" class="form-message"></p>
+        </form>
+    </div>
+
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'jagwa/js/auth.js' %}?v=step5" defer></script>
+<script>
+document.querySelector('.mobile-nav a[data-page="home"]')?.classList.remove('active');
+</script>
+{% endblock %}

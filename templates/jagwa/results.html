@@ -1,0 +1,41 @@
+{% extends "jagwa/base.html" %}
+{% load static %}
+
+{% block title %}JAGWA SPORTS | Results{% endblock %}
+{% block subtitle %}Best Goalkeeper Results{% endblock %}
+
+{% block nav %}
+<a href="/">Home</a>
+<a href="/vote/">Vote</a>
+<a href="/my-vote/">My Vote</a>
+<a href="/results/" class="active">Results</a>
+<a href="/login/" class="nav-btn">Login</a>
+{% endblock %}
+
+{% block content %}
+<section class="results-page page-wrap">
+
+    <div class="section-title">
+        <small>LIVE RESULTS</small>
+        <h2>Best Goalkeeper <span>Standings</span></h2>
+        <p>
+            View the current vote standings for JAGWA SPORTS Best Goalkeeper Award.
+        </p>
+    </div>
+
+    <div id="resultsBox" class="results-box">
+        <div class="glass-card empty-state">
+            <h3>Loading results...</h3>
+            <p>Please wait while we load the goalkeeper standings.</p>
+        </div>
+    </div>
+
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'jagwa/js/public_results.js' %}?v=step9" defer></script>
+<script>
+document.querySelector('.mobile-nav a[data-page="results"]')?.classList.add('active');
+</script>
+{% endblock %}

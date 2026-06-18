@@ -1,0 +1,67 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}JAGWA SPORTS Voting{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="{% static 'jagwa/css/app.css' %}?v=step3">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<div class="app-shell">
+
+    <header class="site-header">
+        <a href="/" class="brand">
+            <div class="brand-logo">
+                <img src="{% static 'logo.png' %}" alt="JAGWA SPORTS">
+            </div>
+            <div>
+                <h1>JAGWA <span>SPORTS</span></h1>
+                <p>{% block subtitle %}Best Goalkeeper Award{% endblock %}</p>
+            </div>
+        </a>
+
+        <nav class="desktop-nav">
+            {% block nav %}
+            <a href="/">Home</a>
+            <a href="/vote/">Vote</a>
+            <a href="/my-vote/">My Vote</a>
+            <a href="/results/">Results</a>
+            <a href="/login/" class="nav-btn">Login</a>
+            {% endblock %}
+        </nav>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <nav class="mobile-nav">
+        <a href="/" data-page="home">
+            <span>🏠</span>
+            Home
+        </a>
+        <a href="/vote/" data-page="vote">
+            <span>🧤</span>
+            Vote
+        </a>
+        <a href="/my-vote/" data-page="my-vote">
+            <span>✅</span>
+            My Vote
+        </a>
+        <a href="/results/" data-page="results">
+            <span>📊</span>
+            Results
+        </a>
+    </nav>
+
+</div>
+
+<script src="{% static 'jagwa/js/api.js' %}?v=step3" defer></script>
+{% block scripts %}{% endblock %}
+
+</body>
+</html>
