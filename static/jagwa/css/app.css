@@ -1695,3 +1695,314 @@ textarea {
         padding-left: 56px;
     }
 }
+
+/* =====================================================
+   ADMIN DASHBOARD
+===================================================== */
+
+.admin-page {
+    padding: 64px 0 80px;
+}
+
+.admin-overview {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.admin-stat-card {
+    padding: 20px;
+    border-radius: 24px;
+    background:
+        radial-gradient(circle at top right, rgba(233,180,43,0.12), transparent 32%),
+        rgba(255,255,255,0.08);
+    border: 1px solid var(--line);
+    backdrop-filter: blur(16px);
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.admin-stat-card.leader {
+    background:
+        radial-gradient(circle at top right, rgba(239,31,38,0.16), transparent 32%),
+        rgba(255,255,255,0.08);
+}
+
+.admin-stat-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 18px;
+    display: grid;
+    place-items: center;
+    background: rgba(233,180,43,0.14);
+    color: var(--gold2);
+    font-size: 25px;
+}
+
+.admin-stat-card strong {
+    display: block;
+    color: #ffffff;
+    font-size: 24px;
+    font-weight: 950;
+    line-height: 1.1;
+}
+
+.admin-stat-card span {
+    display: block;
+    margin-top: 4px;
+    color: rgba(255,255,255,0.62);
+    font-size: 12px;
+    text-transform: uppercase;
+    font-weight: 900;
+    letter-spacing: 1px;
+}
+
+.admin-grid {
+    display: grid;
+    grid-template-columns: 0.85fr 1.15fr;
+    gap: 22px;
+    align-items: start;
+    margin-bottom: 24px;
+}
+
+.second-grid {
+    grid-template-columns: 1fr 1fr;
+    margin-top: 24px;
+}
+
+.admin-panel {
+    padding: 24px;
+    border-radius: 26px;
+}
+
+.panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.panel-head small,
+.danger-zone small {
+    color: var(--gold2);
+    font-weight: 950;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+}
+
+.panel-head h3,
+.danger-zone h3 {
+    margin: 5px 0 0;
+    color: #ffffff;
+    font-size: 22px;
+    font-weight: 950;
+}
+
+.admin-form {
+    display: grid;
+    gap: 15px;
+}
+
+.admin-form .form-group label {
+    color: rgba(255,255,255,0.78);
+}
+
+.admin-form .form-group input,
+.admin-form .form-group select,
+.admin-form .form-group textarea {
+    background: rgba(255,255,255,0.95);
+    color: #111827;
+    border: 1px solid rgba(233,180,43,0.20);
+}
+
+.admin-form-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.admin-list {
+    margin-top: 18px;
+    display: grid;
+    gap: 12px;
+}
+
+.admin-muted {
+    color: rgba(255,255,255,0.64);
+    margin: 0;
+    line-height: 1.6;
+}
+
+.admin-list-item {
+    padding: 14px;
+    border-radius: 18px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+}
+
+.admin-list-item h4 {
+    margin: 0 0 4px;
+    color: #ffffff;
+}
+
+.admin-list-item p {
+    margin: 0;
+    color: rgba(255,255,255,0.60);
+    font-size: 13px;
+}
+
+.admin-goalkeeper-list {
+    display: grid;
+    gap: 15px;
+}
+
+.admin-goalkeeper-card {
+    display: grid;
+    grid-template-columns: 92px 1fr auto;
+    gap: 16px;
+    align-items: center;
+    padding: 14px;
+    border-radius: 22px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid var(--line);
+}
+
+.admin-goalkeeper-photo {
+    width: 92px;
+    height: 92px;
+    border-radius: 20px;
+    background: #05070b;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    border: 1px solid rgba(233,180,43,0.26);
+}
+
+.admin-goalkeeper-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 6px;
+}
+
+.admin-goalkeeper-info h4 {
+    margin: 0 0 5px;
+    color: var(--gold2);
+    font-size: 18px;
+}
+
+.admin-goalkeeper-info p {
+    margin: 0 0 4px;
+    color: rgba(255,255,255,0.66);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.admin-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.admin-actions .btn {
+    min-height: 42px;
+    padding: 0 12px;
+    border-radius: 12px;
+    font-size: 13px;
+}
+
+.admin-results-box {
+    margin-top: 18px;
+    display: grid;
+    gap: 12px;
+}
+
+.danger-zone {
+    margin-top: 24px;
+    border-radius: 26px;
+    padding: 24px;
+    background:
+        radial-gradient(circle at top right, rgba(239,31,38,0.20), transparent 32%),
+        rgba(239,31,38,0.08);
+    border: 1px solid rgba(239,31,38,0.32);
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: center;
+}
+
+.danger-zone p {
+    margin: 8px 0 0;
+    color: rgba(255,255,255,0.68);
+    line-height: 1.6;
+}
+
+@media (max-width: 950px) {
+    .admin-overview {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .admin-grid,
+    .second-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-goalkeeper-card {
+        grid-template-columns: 78px 1fr;
+    }
+
+    .admin-actions {
+        grid-column: 1 / -1;
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 600px) {
+    .admin-page {
+        padding: 42px 0 34px;
+    }
+
+    .admin-overview {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-panel {
+        padding: 18px;
+    }
+
+    .panel-head {
+        flex-direction: column;
+    }
+
+    .admin-form-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-goalkeeper-card {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-goalkeeper-photo {
+        width: 100%;
+        height: 220px;
+    }
+
+    .admin-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .danger-zone {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
