@@ -177,7 +177,6 @@ class CandidatesByPositionView(APIView):
 
 class VoteView(APIView):
     throttle_scope = "vote"
-
     def post(self, request):
         token = request.data.get("token")
         candidate_id = request.data.get("candidate_id")
@@ -204,34 +203,46 @@ class VoteView(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        # MULTIPLE VOTING ALLOWED:
-        # User can vote one or more nominees in the same category.
-        vote = Vote.objects.create(
-            voter=voter,
-            candidate=candidate,
-            position=candidate.position
-        )
 
-        # Do not lock user after voting.
-        voter.has_voted = False
-        voter.login_locked_until = None
-        voter.save(update_fields=["has_voted", "login_locked_until", "updated_at"])
+        with transaction.atomic():
+            Vote.objects.create(
+                voter=voter,
+                candidate=candidate,
+                position=candidate.position
+            )
+
+            total_positions = Position.objects.count()
+
+            voted_positions = Vote.objects.filter(
+                voter=voter
+            ).values(
+                "position"
+            ).distinct().count()
+
+            completed_all_positions = (
+                total_positions > 0 and voted_positions >= total_positions
+            )
+
+            if completed_all_positions:
+                voter.has_voted = True
+                voter.login_locked_until = timezone.now() + timedelta(minutes=5)
+                voter.save(update_fields=["has_voted", "login_locked_until"])
+            else:
+                voter.save(update_fields=["updated_at"])
 
         return Response(
             {
                 "detail": "vote recorded",
-                "vote_id": vote.id,
-                "multiple_voting_allowed": True,
-                "completed_all_positions": False,
-                "candidate": candidate.name,
-                "position": candidate.position.name,
+                "completed_all_positions": completed_all_positions,
+                "voted_positions": voted_positions,
+                "total_positions": total_positions,
             },
             status=status.HTTP_201_CREATED
         )
 
+
 class ResultsView(APIView):
     throttle_scope = "results"
-
     def get(self, request):
         admin_key = (
             request.headers.get("X-Admin-Key")
@@ -241,13 +252,16 @@ class ResultsView(APIView):
         if is_valid_admin_key(admin_key):
             total_voters = Voter.objects.count()
             total_votes = Vote.objects.count()
+
             positions = Position.objects.all().order_by("id")
             data = []
 
             for pos in positions:
                 candidates = Candidate.objects.filter(
                     position=pos
-                ).select_related("position").annotate(
+                ).select_related(
+                    "position"
+                ).annotate(
                     vote_count=Count("votes")
                 ).order_by("-vote_count", "id")
 
@@ -282,8 +296,9 @@ class ResultsView(APIView):
             })
 
         auth = request.headers.get("Authorization", "")
+
         if auth.startswith("Token "):
-            token = auth.replace("Token ", "").strip()
+            token = auth.replace("Token ", "")
         else:
             token = request.query_params.get("token")
 
@@ -301,15 +316,45 @@ class ResultsView(APIView):
                 status=status.HTTP_403_FORBIDDEN
             )
 
+        total_positions = Position.objects.count()
+
+        voted_position_ids = list(
+            Vote.objects.filter(
+                voter=voter
+            ).values_list(
+                "position_id",
+                flat=True
+            ).distinct()
+        )
+
+        voted_positions = len(voted_position_ids)
+
+        if total_positions > 0 and voted_positions < total_positions:
+            return Response(
+                {
+                    "locked": True,
+                    "detail": "You must vote for all positions before viewing your votes.",
+                    "voted_positions": voted_positions,
+                    "total_positions": total_positions,
+                    "voted_position_ids": voted_position_ids,
+                },
+                status=status.HTTP_403_FORBIDDEN
+            )
+
         votes = Vote.objects.filter(
             voter=voter
         ).select_related(
-            "candidate", "position"
-        ).order_by("-created_at", "-id")
+            "candidate",
+            "position"
+        ).order_by(
+            "position__name"
+        )
 
         data = []
+
         for vote in votes:
             candidate = vote.candidate
+
             data.append({
                 "vote_id": vote.id,
                 "position_id": vote.position.id,
@@ -331,6 +376,7 @@ class ResultsView(APIView):
             "total_my_votes": votes.count(),
             "votes": data,
         })
+
 
 class AdminBaseView(APIView):
     throttle_scope = "admin"

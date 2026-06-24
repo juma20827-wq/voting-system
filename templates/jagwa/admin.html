@@ -1,211 +1,460 @@
 {% extends "jagwa/base.html" %}
 {% load static %}
 
-{% block title %}JAGWA SPORTS | Admin Dashboard{% endblock %}
+{% block title %}JAGWA SPORTS | Admin{% endblock %}
 {% block subtitle %}Admin Control Panel{% endblock %}
 
 {% block nav %}
 <a href="/">Home</a>
-<a href="/vote/">Vote</a>
-<a href="/results/">Results</a>
-<a href="/jagwa-control/" class="active nav-btn">Admin</a>
+<a href="/jagwa-control/">Admin</a>
+<a href="/login/?next=/vote/" onclick="localStorage.removeItem('voterProfile')">Vote</a>
+<a href="/login/?next=/my-vote/" onclick="localStorage.removeItem('voterProfile')">Result</a>
 {% endblock %}
 
 {% block content %}
-<section class="admin-page page-wrap">
+<style>
+  .admin-wrap {
+    max-width: 1180px;
+    margin: 34px auto 70px;
+    padding: 0 18px;
+    color: #fff;
+  }
 
-    <div class="section-title">
-        <small>ADMIN DASHBOARD</small>
-        <h2>Best Goalkeeper <span>Control Center</span></h2>
-        <p>
-            Manage goalkeeper nominees, categories, images, voters and results from one clean dashboard.
-        </p>
-    </div>
+  .admin-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+    align-items: start;
+  }
 
-    <!-- OVERVIEW CARDS -->
-    <section class="admin-overview">
-        <div class="admin-stat-card">
-            <div class="admin-stat-icon">🧤</div>
-            <div>
-                <strong id="adminGoalkeeperCount">0</strong>
-                <span>Goalkeepers</span>
-            </div>
-        </div>
+  .admin-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.13);
+    border-radius: 24px;
+    padding: 22px;
+    box-shadow: 0 16px 35px rgba(0,0,0,0.22);
+  }
 
-        <div class="admin-stat-card">
-            <div class="admin-stat-icon">🏆</div>
-            <div>
-                <strong id="adminCategoryCount">0</strong>
-                <span>Categories</span>
-            </div>
-        </div>
+  .admin-card.full {
+    grid-column: 1 / -1;
+  }
 
-        <div class="admin-stat-card">
-            <div class="admin-stat-icon">📊</div>
-            <div>
-                <strong id="adminVoteCount">0</strong>
-                <span>Total Votes</span>
-            </div>
-        </div>
+  .admin-card h2,
+  .admin-card h3 {
+    margin-top: 0;
+    margin-bottom: 14px;
+    font-weight: 900;
+    letter-spacing: .5px;
+  }
 
-        <div class="admin-stat-card leader">
-            <div class="admin-stat-icon">⭐</div>
-            <div>
-                <strong id="adminLeaderName">None</strong>
-                <span>Current Leader</span>
-            </div>
-        </div>
+  .admin-field {
+    margin-bottom: 14px;
+  }
+
+  .admin-field label {
+    display: block;
+    margin-bottom: 7px;
+    font-weight: 800;
+    color: #e5e7eb;
+  }
+
+  .admin-input,
+  .admin-select {
+    width: 100%;
+    padding: 13px 14px;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.95);
+    color: #111827;
+    outline: none;
+  }
+
+  .admin-two {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .admin-btn {
+    border: 0;
+    border-radius: 14px;
+    padding: 13px 18px;
+    font-weight: 900;
+    cursor: pointer;
+    background: #ef233c;
+    color: #fff;
+  }
+
+  .admin-btn.dark {
+    background: #111827;
+  }
+
+  .admin-btn.green {
+    background: #16a34a;
+  }
+
+  .admin-btn.light {
+    background: #fff;
+    color: #111827;
+  }
+
+  .admin-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .category-list {
+    margin: 0;
+    padding-left: 20px;
+    line-height: 1.9;
+  }
+
+  .candidate-admin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+  }
+
+  .candidate-admin-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 20px;
+    overflow: hidden;
+  }
+
+  .candidate-admin-img {
+    height: 180px;
+    background: #05070d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+  }
+
+  .candidate-admin-img img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 10px;
+  }
+
+  .candidate-admin-body {
+    padding: 14px;
+  }
+
+  .admin-comment {
+    background: rgba(255,255,255,0.08);
+    padding: 8px 10px;
+    border-radius: 10px;
+    margin: 7px 0;
+    font-weight: 800;
+  }
+
+  .admin-result-box {
+    line-height: 1.8;
+  }
+
+  @media (max-width: 800px) {
+    .admin-grid,
+    .admin-two {
+      grid-template-columns: 1fr;
+    }
+
+    .admin-wrap {
+      margin-top: 18px;
+      padding: 0 12px 60px;
+    }
+
+    .admin-card {
+      padding: 18px;
+    }
+  }
+</style>
+
+<div class="admin-wrap">
+  <div class="admin-grid">
+
+    <section class="admin-card">
+      <h3>Admin Key</h3>
+      <div class="admin-field">
+        <label>Admin API Key</label>
+        <input id="adminKey" class="admin-input" placeholder="Paste ADMIN_API_KEY here">
+      </div>
+      <button id="saveAdminKey" class="admin-btn dark">Save Key</button>
     </section>
 
-    <!-- ADMIN GRID -->
-    <section class="admin-grid">
-
-        <!-- CATEGORY PANEL -->
-        <div class="admin-panel glass-card" id="categoryPanel">
-            <div class="panel-head">
-                <div>
-                    <small>CATEGORY</small>
-                    <h3>Manage Category</h3>
-                </div>
-            </div>
-
-            <form id="adminCategoryForm" class="admin-form">
-                <div class="form-group">
-                    <label>Category Name</label>
-                    <input id="adminCategoryName" type="text" placeholder="Example: BEST GOALKEEPER">
-                </div>
-
-                <button class="btn btn-gold" type="submit">
-                    Add Category
-                </button>
-            </form>
-
-            <div id="adminCategoryList" class="admin-list">
-                <p class="admin-muted">Categories will appear here.</p>
-            </div>
-        </div>
-
-        <!-- GOALKEEPER FORM -->
-        <div class="admin-panel glass-card" id="goalkeeperFormPanel">
-            <div class="panel-head">
-                <div>
-                    <small>NOMINEES</small>
-                    <h3>Add / Edit Goalkeeper</h3>
-                </div>
-            </div>
-
-            <form id="adminGoalkeeperForm" class="admin-form">
-                <input id="editingGoalkeeperId" type="hidden">
-
-                <div class="form-group">
-                    <label>Goalkeeper Name</label>
-                    <input id="adminGoalkeeperName" type="text" placeholder="Enter goalkeeper name">
-                </div>
-
-                <div class="form-group">
-                    <label>Category</label>
-                    <select id="adminGoalkeeperCategory">
-                        <option value="">Select category</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Goalkeeper Photo</label>
-                    <input id="adminGoalkeeperImage" type="file" accept="image/*">
-                </div>
-
-                <div class="form-group">
-                    <label>Comments / Sifa</label>
-                    <textarea id="adminGoalkeeperDescription" placeholder="Write performance, saves, discipline, leadership..."></textarea>
-                </div>
-
-                <div class="admin-form-actions">
-                    <button class="btn btn-gold" id="adminGoalkeeperSubmit" type="submit">
-                        Add Goalkeeper
-                    </button>
-
-                    <button class="btn btn-dark" id="cancelGoalkeeperEdit" type="button" style="display:none;">
-                        Cancel Edit
-                    </button>
-                </div>
-            </form>
-        </div>
-
+    <section class="admin-card">
+      <h3>Quick Action</h3>
+      <p>Admin akibonyeza Vote au Result, ataingia kama user wa kawaida.</p>
+      <div class="admin-actions">
+        <a href="/login/?next=/vote/" onclick="localStorage.removeItem('voterProfile')" class="admin-btn light" style="text-decoration:none;">Vote</a>
+        <a href="/login/?next=/my-vote/" onclick="localStorage.removeItem('voterProfile')" class="admin-btn green" style="text-decoration:none;">Result</a>
+      </div>
     </section>
 
-    <!-- GOALKEEPER LIST -->
-    <section class="admin-panel glass-card">
-        <div class="panel-head">
-            <div>
-                <small>LIST</small>
-                <h3>Goalkeeper Nominees</h3>
-            </div>
-
-            <button class="btn btn-dark" id="refreshAdminData" type="button">
-                Refresh
-            </button>
+    <section class="admin-card">
+      <h3>Add Category</h3>
+      <form id="categoryForm">
+        <div class="admin-field">
+          <label>Category Name</label>
+          <input id="categoryName" class="admin-input" placeholder="Example: BEST GOALKEEPER" required>
         </div>
+        <button class="admin-btn">Add Category</button>
+      </form>
 
-        <div id="adminGoalkeeperList" class="admin-goalkeeper-list">
-            <p class="admin-muted">Goalkeepers will appear here.</p>
-        </div>
+      <hr style="border-color:rgba(255,255,255,.14);margin:22px 0;">
+
+      <h3>Categories</h3>
+      <ul id="categoryList" class="category-list"></ul>
     </section>
 
-    <!-- RESULTS + VOTERS -->
-    <section class="admin-grid second-grid">
-
-        <div class="admin-panel glass-card">
-            <div class="panel-head">
-                <div>
-                    <small>RESULTS</small>
-                    <h3>Winner & Ranking</h3>
-                </div>
-            </div>
-
-            <button class="btn btn-gold" id="showAdminResults" type="button">
-                Show Results
-            </button>
-
-            <div id="adminResultsBox" class="admin-results-box"></div>
+    <section class="admin-card">
+      <h3>Add Nominee</h3>
+      <form id="candidateForm">
+        <div class="admin-field">
+          <label>Nominee Name</label>
+          <input id="candidateName" class="admin-input" placeholder="Nominee name" required>
         </div>
 
-        <div class="admin-panel glass-card">
-            <div class="panel-head">
-                <div>
-                    <small>VOTERS</small>
-                    <h3>Registered Voters</h3>
-                </div>
-            </div>
-
-            <button class="btn btn-dark" id="loadAdminVoters" type="button">
-                Load Voters
-            </button>
-
-            <div id="adminVotersBox" class="admin-list"></div>
+        <div class="admin-field">
+          <label>Category</label>
+          <select id="candidatePosition" class="admin-select" required></select>
         </div>
 
+        <div class="admin-two">
+          <div class="admin-field">
+            <label>National Team</label>
+            <input id="candidateNationalTeam" class="admin-input" placeholder="Mfano: TANZANIA">
+          </div>
+
+          <div class="admin-field">
+            <label>Club / Team</label>
+            <input id="candidateClub" class="admin-input" placeholder="Mfano: SIMBA">
+          </div>
+        </div>
+
+        <div class="admin-field">
+          <label>Photo</label>
+          <input id="candidateImage" type="file" accept="image/*" class="admin-input">
+        </div>
+
+        <button class="admin-btn">Add Nominee</button>
+      </form>
     </section>
 
-    <!-- DANGER ZONE -->
-    <section class="admin-panel danger-zone">
-        <div>
-            <small>DANGER ZONE</small>
-            <h3>Reset Election</h3>
-            <p>
-                This action can reset voting data. Use it carefully only when you are sure.
-            </p>
-        </div>
-
-        <button class="btn btn-red" id="resetElectionBtn" type="button">
-            Reset Election
-        </button>
+    <section class="admin-card full">
+      <div class="admin-actions" style="justify-content:space-between;">
+        <h3>Nominees</h3>
+        <button id="refreshCandidates" class="admin-btn light">Refresh</button>
+      </div>
+      <div id="candidateList"></div>
     </section>
 
-</section>
+    <section class="admin-card full">
+      <div class="admin-actions" style="justify-content:space-between;">
+        <h3>Results</h3>
+        <button id="loadResults" class="admin-btn green">Show Results</button>
+      </div>
+      <div id="adminResults" class="admin-result-box"></div>
+    </section>
 
-<div id="adminToast" class="toast-message"></div>
-{% endblock %}
+  </div>
+</div>
 
-{% block scripts %}
-<script src="{% static 'jagwa/js/admin.js' %}?v=admin-fix-html-voters-1781808042" defer></script>
+<script>
+(function () {
+  const API = "/api/";
+  localStorage.removeItem("voterProfile");
+
+  function safe(x) {
+    return String(x || "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  function getKey() {
+    return document.getElementById("adminKey").value.trim() || localStorage.getItem("ADMIN_API_KEY") || "";
+  }
+
+  document.getElementById("adminKey").value = localStorage.getItem("ADMIN_API_KEY") || "";
+
+  document.getElementById("saveAdminKey").onclick = function () {
+    localStorage.setItem("ADMIN_API_KEY", document.getElementById("adminKey").value.trim());
+    alert("Admin key saved.");
+  };
+
+  async function api(url, options) {
+    options = options || {};
+    options.headers = options.headers || {};
+    options.headers["X-Admin-Key"] = getKey();
+
+    const separator = url.includes("?") ? "&" : "?";
+    const fullUrl = url + separator + "admin_key=" + encodeURIComponent(getKey());
+
+    const res = await fetch(fullUrl, options);
+    const text = await res.text();
+    let data = null;
+
+    try { data = text ? JSON.parse(text) : null; } catch { data = text; }
+
+    if (!res.ok) {
+      throw new Error((data && (data.detail || data.message)) || text || "Request failed");
+    }
+
+    return data;
+  }
+
+  function buildDescription() {
+    const national = document.getElementById("candidateNationalTeam").value.trim();
+    const club = document.getElementById("candidateClub").value.trim();
+    const parts = [];
+
+    if (national) parts.push("🇹🇿 NATIONAL TEAM ⚽ " + national);
+    if (club) parts.push("🏆 CLUB / TEAM ⚽ " + club);
+
+    return parts.join("\\n");
+  }
+
+  function commentsHTML(description) {
+    let raw = String(description || "")
+      .replace(/\r/g, "")
+      .replace(/\s*(🏆\s*)/g, "\n$1")
+      .replace(/\s+(CLUB\s*\/\s*TEAM\s*⚽?)/ig, "\n$1");
+
+    const lines = raw.split(/\n+/).map(x => x.trim()).filter(Boolean);
+
+    return lines.map(x => `<div class="admin-comment">${safe(x)}</div>`).join("");
+  }
+
+  async function loadPositions() {
+    const data = await fetch(API + "positions/").then(r => r.json());
+
+    document.getElementById("categoryList").innerHTML =
+      data.map(p => `<li>${safe(p.name)}</li>`).join("");
+
+    document.getElementById("candidatePosition").innerHTML =
+      data.map(p => `<option value="${p.id}">${safe(p.name)}</option>`).join("");
+  }
+
+  async function loadCandidates() {
+    const data = await api(API + "admin/candidates/");
+    const box = document.getElementById("candidateList");
+
+    if (!data.length) {
+      box.innerHTML = `<div class="admin-comment">No nominees found.</div>`;
+      return;
+    }
+
+    box.innerHTML = `
+      <div class="candidate-admin-grid">
+        ${data.map(c => `
+          <div class="candidate-admin-card">
+            <div class="candidate-admin-img">
+              ${c.image_url ? `<img src="${safe(c.image_url)}">` : `<span>No Image</span>`}
+            </div>
+
+            <div class="candidate-admin-body">
+              <h3>${safe(c.name)}</h3>
+              <p>${safe(c.position_name || "")}</p>
+              ${commentsHTML(c.description)}
+              <p><b>Votes:</b> ${c.votes_count || 0}</p>
+            </div>
+          </div>
+        `).join("")}
+      </div>
+    `;
+  }
+
+  async function uploadImage(candidateId, file) {
+    if (!file) return;
+
+    const form = new FormData();
+    form.append("candidate_id", candidateId);
+    form.append("image", file);
+
+    await api(API + "admin/upload-image/", {
+      method: "POST",
+      body: form
+    });
+  }
+
+  document.getElementById("categoryForm").onsubmit = async function (e) {
+    e.preventDefault();
+
+    try {
+      await api(API + "admin/positions/", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+          name: document.getElementById("categoryName").value.trim(),
+          description: ""
+        })
+      });
+
+      document.getElementById("categoryName").value = "";
+      await loadPositions();
+      alert("Category added.");
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
+  document.getElementById("candidateForm").onsubmit = async function (e) {
+    e.preventDefault();
+
+    try {
+      const file = document.getElementById("candidateImage").files[0];
+
+      const candidate = await api(API + "admin/candidates/", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+          name: document.getElementById("candidateName").value.trim(),
+          position_id: document.getElementById("candidatePosition").value,
+          description: buildDescription(),
+          image_url: ""
+        })
+      });
+
+      if (file && candidate.id) {
+        await uploadImage(candidate.id, file);
+      }
+
+      document.getElementById("candidateName").value = "";
+      document.getElementById("candidateNationalTeam").value = "";
+      document.getElementById("candidateClub").value = "";
+      document.getElementById("candidateImage").value = "";
+
+      await loadCandidates();
+      alert("Nominee added.");
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
+  document.getElementById("refreshCandidates").onclick = loadCandidates;
+
+  document.getElementById("loadResults").onclick = async function () {
+    try {
+      const data = await api(API + "results/");
+
+      document.getElementById("adminResults").innerHTML =
+        data.positions.map(pos => `
+          <div class="admin-comment">
+            <h3>${safe(pos.position)}</h3>
+            ${pos.candidates.map(c => `<div>${safe(c.name)} — ${c.votes} votes</div>`).join("")}
+          </div>
+        `).join("");
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
+  loadPositions().then(loadCandidates).catch(err => alert(err.message));
+})();
+</script>
 {% endblock %}

@@ -39,3 +39,17 @@ backups_step2/
 
 # local backups
 backups_*/
+
+# Local backup files
+*.bak*
+*.backup
+*.old
+*.tmp
+
+# Environment / server files
+.env
+venv/
+__pycache__/
+*.pyc
+staticfiles/
+media/

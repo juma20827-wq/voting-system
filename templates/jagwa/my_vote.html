@@ -1,41 +1,315 @@
 {% extends "jagwa/base.html" %}
 {% load static %}
 
-{% block title %}JAGWA SPORTS | My Vote{% endblock %}
-{% block subtitle %}Your Saved Vote{% endblock %}
+
+
 
 {% block nav %}
 <a href="/">Home</a>
 <a href="/vote/">Vote</a>
-<a href="/my-vote/" class="active">My Vote</a>
-<a href="/results/">Results</a>
-<a href="/login/" class="nav-btn">Login</a>
+<a href="/my-vote/">Result</a>
+<a id="navLoginLink" href="/login/">Login</a>
 {% endblock %}
 
 {% block content %}
-<section class="myvote-page page-wrap">
+<style>
+  .result-wrap {
+    max-width: 980px;
+    margin: 34px auto 80px;
+    padding: 0 18px;
+    color: #fff;
+  }
 
-    <div class="section-title">
-        <small>MY VOTE</small>
-        <h2>Your Best Goalkeeper <span>Choice</span></h2>
-        <p>
-            This page shows the goalkeeper you selected. Your vote is saved securely.
-        </p>
-    </div>
+  .result-header {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 24px;
+    padding: 22px;
+    margin-bottom: 22px;
+  }
 
-    <div id="myVoteBox" class="myvote-box">
-        <div class="glass-card empty-state">
-            <h3>Loading your vote...</h3>
-            <p>Please wait while we check your voting record.</p>
-        </div>
-    </div>
+  .result-header h2 {
+    margin: 0 0 8px;
+    font-size: 30px;
+    font-weight: 900;
+  }
 
-</section>
-{% endblock %}
+  .result-card {
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 24px;
+    padding: 18px;
+    margin-bottom: 22px;
+    box-shadow: 0 16px 35px rgba(0,0,0,0.22);
+  }
 
-{% block scripts %}
-<script src="{% static 'jagwa/js/results.js' %}?v=step8" defer></script>
+  .result-img {
+    width: 150px;
+    height: 150px;
+    border-radius: 18px;
+    background: #05070d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    flex: 0 0 150px;
+  }
+
+  .result-img img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 14px;
+  }
+
+  .result-info h3 {
+    margin: 5px 0 10px;
+    font-size: 24px;
+    font-weight: 900;
+  }
+
+  .result-badge {
+    display: inline-block;
+    background: #ef233c;
+    color: #fff;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-weight: 900;
+    font-size: 13px;
+  }
+
+  .result-comment {
+    background: rgba(255,255,255,0.08);
+    padding: 10px 12px;
+    border-radius: 13px;
+    margin: 9px 0;
+    font-weight: 800;
+  }
+
+  .result-label {
+    display: block;
+    color: #ef233c;
+    font-size: 12px;
+    letter-spacing: 1px;
+    margin-bottom: 3px;
+  }
+
+  .result-value {
+    display: block;
+    color: #fff;
+  }
+
+  .back-btn {
+    display: inline-block;
+    background: #fff;
+    color: #111827;
+    padding: 12px 16px;
+    border-radius: 14px;
+    text-decoration: none;
+    font-weight: 900;
+  }
+
+  @media (max-width: 650px) {
+    .result-wrap {
+      margin-top: 18px;
+      padding: 0 12px 80px;
+    }
+
+    .result-card {
+      flex-direction: column;
+      gap: 14px;
+      padding: 16px;
+    }
+
+    .result-img {
+      width: 100%;
+      height: 220px;
+      flex: none;
+    }
+  }
+</style>
+
+<div class="result-wrap">
+  <section class="result-header">
+    <h2>Result</h2>
+    <p>Hapa utaona nominees wote uliowapigia kura.</p>
+    <a href="/vote/" class="back-btn">Back to Vote</a>
+  </section>
+
+  <div id="resultBox">Loading...</div>
+</div>
+
 <script>
-document.querySelector('.mobile-nav a[data-page="my-vote"]')?.classList.add('active');
+(function () {
+  const API = "/api/";
+
+  function safe(x) {
+    return String(x || "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  function getVoter() {
+    try { return JSON.parse(localStorage.getItem("voterProfile") || "null"); }
+    catch { return null; }
+  }
+
+  function updateLoginToLogout() {
+    const voter = getVoter();
+
+    document.querySelectorAll("a").forEach(a => {
+      const text = (a.textContent || "").trim().toLowerCase();
+
+      if (text === "login") {
+        if (voter && voter.token) {
+          a.textContent = "Logout";
+          a.href = "#";
+          a.onclick = function (e) {
+            e.preventDefault();
+            localStorage.removeItem("voterProfile");
+            localStorage.removeItem("votedCandidates");
+            window.location.href = "/login/";
+          };
+        }
+      }
+    });
+  }
+
+  async function api(url, options) {
+    const res = await fetch(url, options || {});
+    const text = await res.text();
+    let data = null;
+
+    try { data = text ? JSON.parse(text) : null; } catch { data = text; }
+
+    if (!res.ok) {
+      throw new Error((data && (data.detail || data.message)) || text || "Request failed");
+    }
+
+    return data;
+  }
+
+  function cleanValue(v) {
+    return String(v || "")
+      .replace(/\\n/g, " ")
+      .replace(/\r/g, " ")
+      .replace(/🇹🇿|🏆|⚽/g, " ")
+      .replace(/NATIONAL\s+TEAM/ig, " ")
+      .replace(/CLUB\s*\/\s*TEAM/ig, " ")
+      .replace(/^TEAM/ig, " ")
+      .replace(/\bCOMMENT\b/ig, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function commentRows(description) {
+    let raw = String(description || "")
+      .replace(/\\n/g, "\n")
+      .replace(/\r/g, "\n")
+      .replace(/\bCOMMENT\b/ig, "")
+      .trim();
+
+    let flat = raw.replace(/\n+/g, " ").replace(/\s+/g, " ").trim();
+
+    let national = "";
+    let club = "";
+
+    const n = flat.match(/NATIONAL\s+TEAM\s*(?:⚽)?\s*(.*)$/i);
+    if (n) {
+      let rest = n[1] || "";
+      const split = rest.match(/^(.*?)(?:🏆|CLUB\s*\/\s*TEAM|TEAM\s*⚽|TEAM\s+)(.*)$/i);
+      if (split) {
+        national = cleanValue(split[1]);
+        club = cleanValue(split[2]);
+      } else {
+        national = cleanValue(rest);
+      }
+    }
+
+    if (!club && /🏆|CLUB\s*\/\s*TEAM/i.test(flat)) {
+      const c = flat.match(/(?:🏆\s*)?(?:CLUB\s*\/\s*TEAM)\s*(?:⚽)?\s*(.*)$/i);
+      if (c) club = cleanValue(c[1]);
+    }
+
+    const rows = [];
+    if (national && national.length > 1) rows.push({label: "NATIONAL TEAM", value: national});
+    if (club && club.length > 1) rows.push({label: "CLUB / TEAM", value: club});
+
+    return rows;
+  }
+
+  function commentsHTML(description) {
+    const rows = commentRows(description);
+    if (!rows.length) return "";
+
+    return rows.map(row => `
+      <div class="result-comment">
+        <span class="result-label">${safe(row.label)}</span>
+        <span class="result-value">${safe(row.value)}</span>
+      </div>
+    `).join("");
+  }
+
+  function imageHTML(v) {
+    if (v.image_url) {
+      return `<div class="result-img"><img src="${safe(v.image_url)}"></div>`;
+    }
+
+    return `<div class="result-img">No Image</div>`;
+  }
+
+  async function loadResult() {
+    updateLoginToLogout();
+
+    const box = document.getElementById("resultBox");
+    const voter = getVoter();
+
+    if (!voter || !voter.token) {
+      box.innerHTML = `<div class="result-header">Login kwanza kuona result. <a href="/vote/" class="back-btn">Go to Vote</a></div>`;
+      return;
+    }
+
+    try {
+      const data = await api(API + "results/", {
+        headers: {"Authorization": "Token " + voter.token}
+      });
+
+      if (!data.votes || !data.votes.length) {
+        box.innerHTML = `<div class="result-header">Bado hujapiga kura.</div>`;
+        return;
+      }
+
+      box.innerHTML = `
+        <section class="result-header">
+          <h3>${safe(data.voter.name)}</h3>
+          <p>${safe(data.voter.phone)}</p>
+          <p><b>Total votes:</b> ${data.votes.length}</p>
+        </section>
+
+        ${data.votes.map((v, i) => `
+          <section class="result-card">
+            ${imageHTML(v)}
+            <div class="result-info">
+              <span class="result-badge">Vote #${i + 1}</span>
+              <h3>${safe(v.candidate)}</h3>
+              <p><b>Category:</b> ${safe(v.position)}</p>
+              ${commentsHTML(v.description)}
+            </div>
+          </section>
+        `).join("")}
+      `;
+    } catch (err) {
+      box.innerHTML = `<div class="result-header">${safe(err.message)}</div>`;
+    }
+  }
+
+  loadResult();
+})();
 </script>
 {% endblock %}

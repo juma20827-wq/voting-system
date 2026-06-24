@@ -199,7 +199,7 @@ class Vote(models.Model):
 
     class Meta:
         db_table = 'votes'
-        indexes = [models.Index(fields=['voter', 'position'])]
+        unique_together = ('voter', 'position')
 
     def __str__(self):
         return f"Vote: {self.voter} -> {self.candidate}"

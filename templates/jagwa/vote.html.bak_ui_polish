@@ -1,39 +1,49 @@
 {% extends "jagwa/base.html" %}
 {% load static %}
 
+{% block title %}JAGWA SPORTS | Vote{% endblock %}
+{% block subtitle %}Vote{% endblock %}
+
 {% block nav %}
 <a href="/">Home</a>
 <a href="/vote/">Vote</a>
 <a href="/my-vote/">Result</a>
-<a id="navLoginLink" href="/login/">Login</a>
+<a href="/login/">Login</a>
 {% endblock %}
 
 {% block content %}
 <style>
   .vote-page-wrap {
     max-width: 1180px;
-    margin: 32px auto;
-    padding: 0 18px 70px;
+    margin: 40px auto;
+    padding: 0 18px 60px;
   }
 
-  .vote-alert {
-    max-width: 900px;
-    margin: 0 auto 18px;
-    border-radius: 16px;
-    padding: 13px 16px;
-    background: rgba(239,35,60,0.12);
-    border: 1px solid rgba(239,35,60,0.25);
+  .vote-hero {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 24px;
+    padding: 22px;
+    margin-bottom: 18px;
     color: white;
+  }
+
+  .vote-hero h2 {
+    margin: 0 0 8px;
+    font-size: 30px;
     font-weight: 800;
   }
 
   .category-bar {
-    max-width: 900px;
-    margin: 0 auto 22px;
+    position: sticky;
+    top: 90px;
+    z-index: 20;
     background: rgba(10, 15, 25, 0.94);
+    backdrop-filter: blur(10px);
     border: 1px solid rgba(255,255,255,0.12);
     border-radius: 22px;
     padding: 16px;
+    margin-bottom: 20px;
     color: white;
   }
 
@@ -48,13 +58,12 @@
   .category-title h3 {
     margin: 0;
     font-size: 24px;
-    font-weight: 900;
+    font-weight: 800;
   }
 
   .category-title p {
     margin: 4px 0 0;
     color: #b9c1d1;
-    font-weight: 700;
   }
 
   .category-actions {
@@ -67,20 +76,128 @@
     border: 0;
     padding: 11px 16px;
     border-radius: 14px;
-    font-weight: 900;
+    font-weight: 800;
     cursor: pointer;
     text-decoration: none;
     display: inline-block;
   }
 
-  .cat-btn.prev { background: #ffffff; color: #111827; }
-  .cat-btn.next { background: #ef233c; color: #ffffff; }
-  .cat-btn.result { background: #16a34a; color: #ffffff; }
-  .cat-btn:disabled { opacity: .45; cursor: not-allowed; }
+  .cat-btn.prev {
+    background: #ffffff;
+    color: #111827;
+  }
+
+  .cat-btn.next {
+    background: #ef233c;
+    color: white;
+  }
+
+  .cat-btn.result {
+    background: #16a34a;
+    color: white;
+  }
+
+  .cat-btn:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+  }
+
+  .nominee-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 360px));
+    justify-content: center;
+    gap: 22px;
+  }
+
+  .nominee-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 24px;
+    overflow: hidden;
+    color: white;
+    box-shadow: 0 16px 35px rgba(0,0,0,0.22);
+  }
+
+  .nominee-image-box {
+    width: 100%;
+    height: 230px;
+    background: #05070d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+  }
+
+  .nominee-image-box img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    object-position: center center;
+    border-radius: 12px;
+  }
+
+  .nominee-body {
+    padding: 18px;
+  }
+
+  .nominee-body h3 {
+    margin: 0 0 8px;
+    font-size: 22px;
+    font-weight: 900;
+    letter-spacing: .5px;
+  }
+
+  .nominee-position {
+    color: #b9c1d1;
+    margin-bottom: 10px;
+    font-weight: 700;
+  }
+
+  .comment-line {
+    background: rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 9px 11px;
+    margin: 8px 0;
+    font-weight: 800;
+    line-height: 1.45;
+    word-break: break-word;
+  }
+
+  .comment-label {
+    display: block;
+    color: #ef233c;
+    font-size: 12px;
+    letter-spacing: 1px;
+    margin-bottom: 3px;
+  }
+
+  .comment-value {
+    display: block;
+    color: #ffffff;
+  }
+
+  .vote-btn {
+    margin-top: 14px;
+    width: 100%;
+    border: 0;
+    border-radius: 14px;
+    padding: 13px;
+    background: #ffffff;
+    color: #111827;
+    font-weight: 900;
+    cursor: pointer;
+  }
+
+  .vote-btn:hover {
+    background: #ef233c;
+    color: #fff;
+  }
 
   .login-box {
     max-width: 520px;
-    margin: 28px auto;
+    margin: 30px auto;
     background: rgba(255,255,255,0.07);
     border: 1px solid rgba(255,255,255,0.14);
     border-radius: 24px;
@@ -106,124 +223,24 @@
     font-weight: 900;
   }
 
-  .nominee-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 430px));
-    justify-content: center;
-    gap: 26px;
-  }
-
-  .nominee-card {
-    width: 100%;
-    max-width: 430px;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 24px;
-    overflow: hidden;
+  .vote-alert {
+    margin-bottom: 16px;
+    border-radius: 16px;
+    padding: 13px 16px;
+    background: rgba(239,35,60,0.12);
+    border: 1px solid rgba(239,35,60,0.25);
     color: white;
-    box-shadow: 0 16px 35px rgba(0,0,0,0.22);
-  }
-
-  .nominee-image-box {
-    width: 100%;
-    height: 225px;
-    background: #05070d;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 10px;
-  }
-
-  .nominee-image-box img {
-    max-width: 100%;
-    max-height: 100%;
-    width: auto;
-    height: auto;
-    object-fit: contain;
-    object-position: center;
-    border-radius: 14px;
-  }
-
-  .nominee-body {
-    padding: 18px;
-  }
-
-  .nominee-body h3 {
-    margin: 0 0 8px;
-    font-size: 22px;
-    font-weight: 900;
-    letter-spacing: .5px;
-  }
-
-  .nominee-position {
-    color: #b9c1d1;
-    margin-bottom: 12px;
-    font-weight: 800;
-  }
-
-  .comment-line {
-    background: rgba(255,255,255,0.08);
-    border-radius: 13px;
-    padding: 10px 12px;
-    margin: 9px 0;
-    font-weight: 800;
-    line-height: 1.45;
-    word-break: break-word;
-  }
-
-  .comment-label {
-    display: block;
-    color: #ef233c;
-    font-size: 12px;
-    letter-spacing: 1px;
-    margin-bottom: 3px;
-  }
-
-  .comment-value {
-    display: block;
-    color: #fff;
-  }
-
-  .vote-btn {
-    margin-top: 15px;
-    width: 100%;
-    border: 0;
-    border-radius: 15px;
-    padding: 14px;
-    background: #ffffff;
-    color: #111827;
-    font-weight: 900;
-    cursor: pointer;
-    transition: .2s ease;
-  }
-
-  .vote-btn:hover {
-    background: #ef233c;
-    color: #fff;
-  }
-
-  .vote-btn.voted {
-    background: #16a34a !important;
-    color: white !important;
   }
 
   @media (max-width: 650px) {
     .vote-page-wrap {
       margin-top: 18px;
-      padding: 0 12px 70px;
+      padding: 0 12px 40px;
     }
 
-    .nominee-grid {
-      grid-template-columns: 1fr;
-      gap: 22px;
-    }
-
-    .nominee-card {
-      max-width: 100%;
-    }
-
-    .nominee-image-box {
-      height: 215px;
+    .category-bar {
+      position: relative;
+      top: auto;
     }
 
     .category-actions {
@@ -235,10 +252,33 @@
       text-align: center;
       padding: 12px 10px;
     }
+
+    .nominee-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .nominee-image-box {
+      height: 220px;
+    }
+
+    .nominee-card {
+      max-width: 360px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .vote-hero h2 {
+      font-size: 24px;
+    }
   }
 </style>
 
 <div class="vote-page-wrap">
+  <section class="vote-hero">
+    <h2>Vote Page</h2>
+    <p>Unaweza kupiga kura moja au zaidi kwenye category moja. Ukiona moja inatosha, bonyeza <b>Next Category</b>.</p>
+  </section>
+
   <section id="loginBox" class="login-box" style="display:none;">
     <h3>Voter Login</h3>
     <p>Andika jina na phone number kabla ya kupiga kura.</p>
@@ -283,39 +323,6 @@
     localStorage.setItem("voterProfile", JSON.stringify(v));
   }
 
-  function updateLoginToLogout() {
-    const voter = getVoter();
-    document.querySelectorAll("a").forEach(a => {
-      const text = (a.textContent || "").trim().toLowerCase();
-      if (text === "login") {
-        if (voter && voter.token) {
-          a.textContent = "Logout";
-          a.href = "#";
-          a.onclick = function (e) {
-            e.preventDefault();
-            localStorage.removeItem("voterProfile");
-            localStorage.removeItem("votedCandidates");
-            window.location.href = "/login/";
-          };
-        }
-      }
-    });
-  }
-
-  function getVotedSet() {
-    try {
-      return new Set(JSON.parse(localStorage.getItem("votedCandidates") || "[]"));
-    } catch {
-      return new Set();
-    }
-  }
-
-  function markVoted(candidateId) {
-    const set = getVotedSet();
-    set.add(String(candidateId));
-    localStorage.setItem("votedCandidates", JSON.stringify(Array.from(set)));
-  }
-
   async function api(url, options) {
     const res = await fetch(url, options || {});
     const text = await res.text();
@@ -329,71 +336,54 @@
     return data;
   }
 
-  function cleanValue(v) {
-    return String(v || "")
-      .replace(/\\n/g, " ")
-      .replace(/\r/g, " ")
-      .replace(/🇹🇿|🏆|⚽/g, " ")
-      .replace(/NATIONAL\s+TEAM/ig, " ")
-      .replace(/CLUB\s*\/\s*TEAM/ig, " ")
-      .replace(/^TEAM/ig, " ")
-      .replace(/\bCOMMENT\b/ig, " ")
-      .replace(/\s+/g, " ")
-      .trim();
-  }
-
-  function commentRows(description) {
-    let raw = String(description || "")
-      .replace(/\\n/g, "\n")
-      .replace(/\r/g, "\n")
-      .replace(/\bCOMMENT\b/ig, "")
-      .trim();
-
-    let flat = raw.replace(/\n+/g, " ").replace(/\s+/g, " ").trim();
-
-    let national = "";
-    let club = "";
-
-    const n = flat.match(/NATIONAL\s+TEAM\s*(?:⚽)?\s*(.*)$/i);
-    if (n) {
-      let rest = n[1] || "";
-      const split = rest.match(/^(.*?)(?:🏆|CLUB\s*\/\s*TEAM|TEAM\s*⚽|TEAM\s+)(.*)$/i);
-      if (split) {
-        national = cleanValue(split[1]);
-        club = cleanValue(split[2]);
-      } else {
-        national = cleanValue(rest);
-      }
-    }
-
-    if (!club && /🏆|CLUB\s*\/\s*TEAM/i.test(flat)) {
-      const c = flat.match(/(?:🏆\s*)?(?:CLUB\s*\/\s*TEAM)\s*(?:⚽)?\s*(.*)$/i);
-      if (c) club = cleanValue(c[1]);
-    }
-
-    const rows = [];
-    if (national && national.length > 1) rows.push({label: "NATIONAL TEAM", value: national});
-    if (club && club.length > 1) rows.push({label: "CLUB / TEAM", value: club});
-
-    if (!rows.length && raw) {
-      raw.split(/\n+/).map(x => cleanValue(x)).filter(Boolean).forEach(x => {
-        rows.push({label: "COMMENT", value: x});
-      });
-    }
-
-    return rows;
-  }
-
   function commentsHTML(description) {
-    const rows = commentRows(description);
-    if (!rows.length) return "";
+    let raw = String(description || "").trim();
 
-    return rows.map(row => `
-      <div class="comment-line">
-        <span class="comment-label">${safe(row.label)}</span>
-        <span class="comment-value">${safe(row.value)}</span>
-      </div>
-    `).join("");
+    // Tenganisha comments hata kama zili-save kwa line moja zamani
+    raw = raw
+      .replace(/\r/g, "")
+      .replace(/\s*(🏆\s*)/g, "\n$1")
+      .replace(/\s+(CLUB\s*\/\s*TEAM\s*⚽?)/ig, "\n$1")
+      .replace(/\s+(TEAM\s*⚽\s*)/ig, "\n$1");
+
+    let lines = raw
+      .split(/\n+/)
+      .map(x => x.trim())
+      .filter(Boolean);
+
+    // Ondoa duplicate empty/short lines
+    lines = lines.filter((line, index, arr) => arr.indexOf(line) === index);
+
+    if (!lines.length) return "";
+
+    return lines.map(line => {
+      let label = "COMMENT";
+      let value = line;
+
+      if (/NATIONAL\s+TEAM/i.test(line)) {
+        label = "NATIONAL TEAM";
+        value = line
+          .replace(/🇹🇿/g, "")
+          .replace(/NATIONAL\s+TEAM/ig, "")
+          .replace(/⚽/g, "")
+          .trim();
+      } else if (/CLUB|TEAM/i.test(line)) {
+        label = "CLUB / TEAM";
+        value = line
+          .replace(/🏆/g, "")
+          .replace(/CLUB\s*\/\s*TEAM/ig, "")
+          .replace(/^TEAM/ig, "")
+          .replace(/⚽/g, "")
+          .trim();
+      }
+
+      return `
+        <div class="comment-line">
+          <span class="comment-label">${safe(label)}</span>
+          <span class="comment-value">${safe(value)}</span>
+        </div>
+      `;
+    }).join("");
   }
 
   function imageHTML(c) {
@@ -424,9 +414,7 @@
       phone: data.phone || data.phone_number || data.voter_phone || phone,
       token: data.token || data.access || data.key
     });
-
     document.getElementById("loginBox").style.display = "none";
-    updateLoginToLogout();
     await loadVotePage();
   }
 
@@ -444,8 +432,6 @@
   });
 
   async function loadVotePage() {
-    updateLoginToLogout();
-
     const voter = getVoter();
     const loginBox = document.getElementById("loginBox");
     const alertBox = document.getElementById("voteAlert");
@@ -459,7 +445,6 @@
     }
 
     loginBox.style.display = "none";
-
     const voterName = voter.name || voter.full_name || "User";
     const voterPhone = voter.phone || voter.phone_number || "";
     alertBox.textContent = `Logged in as ${voterName}${voterPhone ? " | " + voterPhone : ""}`;
@@ -507,7 +492,6 @@
 
     const candidates = await api(API + "positions/" + pos.id + "/candidates/");
     const box = document.getElementById("nomineesBox");
-    const votedSet = getVotedSet();
 
     if (!candidates.length) {
       box.innerHTML = `<div class="vote-alert">No nominees in this category.</div>`;
@@ -516,22 +500,17 @@
 
     box.innerHTML = `
       <div class="nominee-grid">
-        ${candidates.map(c => {
-          const voted = votedSet.has(String(c.id));
-          return `
-            <div class="nominee-card">
-              ${imageHTML(c)}
-              <div class="nominee-body">
-                <h3>${safe(c.name)}</h3>
-                <div class="nominee-position">${safe(c.position_name || pos.name)}</div>
-                ${commentsHTML(c.description)}
-                <button class="vote-btn ${voted ? "voted" : ""}" data-id="${c.id}" data-name="${safe(c.name)}">
-                  ${voted ? "Voted ✓" : "Vote"}
-                </button>
-              </div>
+        ${candidates.map(c => `
+          <div class="nominee-card">
+            ${imageHTML(c)}
+            <div class="nominee-body">
+              <h3>${safe(c.name)}</h3>
+              <div class="nominee-position">${safe(c.position_name || pos.name)}</div>
+              ${commentsHTML(c.description)}
+              <button class="vote-btn" data-id="${c.id}" data-name="${safe(c.name)}">Vote</button>
             </div>
-          `;
-        }).join("")}
+          </div>
+        `).join("")}
       </div>
     `;
 
@@ -548,10 +527,6 @@
               candidate_id: btn.dataset.id
             })
           });
-
-          markVoted(btn.dataset.id);
-          btn.classList.add("voted");
-          btn.textContent = "Voted ✓";
 
           alert("Vote recorded. Unaweza kupiga kura nyingine au kwenda Next.");
         } catch (err) {

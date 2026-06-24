@@ -15,7 +15,7 @@ urlpatterns = [
     # Custom admin login and panel
     path('jagwa-login/', TemplateView.as_view(template_name='admin_login.html'), name='admin_login'),
     # Django admin ya kawaida
-    # # # path('admin/', admin.site.urls),
+    # # path('admin/', admin.site.urls),
 
     # API
     path('api/', include('api.urls')),

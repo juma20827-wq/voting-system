@@ -1,0 +1,250 @@
+{% extends "jagwa/base.html" %}
+{% load static %}
+
+{% block title %}JAGWA SPORTS | Admin Dashboard{% endblock %}
+{% block subtitle %}Admin Control Panel{% endblock %}
+
+{% block nav %}
+<a href="/">Home</a>
+<a href="/vote/">Vote</a>
+<a href="/results/">Results</a>
+<a href="/jagwa-control/" class="active nav-btn">Admin</a>
+{% endblock %}
+
+{% block content %}
+
+<div class="card shadow-sm mb-4 p-3 border-0" id="adminUserVoteBox">
+  <h3 class="mb-2">User Voting Test</h3>
+  <p class="text-muted mb-3">
+    Admin akibonyeza hizi buttons ataingia kama user wa kawaida, ataandika Name na Phone Number.
+  </p>
+  <a href="/login/?next=/vote/" class="btn btn-primary me-2 force-user-login">Vote as User</a>
+  <a href="/login/?next=/my-vote/" class="btn btn-outline-primary force-user-login">My Vote as User</a>
+</div>
+
+<section class="admin-page page-wrap">
+
+    <div class="section-title">
+        <small>ADMIN DASHBOARD</small>
+        <h2>Best Goalkeeper <span>Control Center</span></h2>
+        <p>
+            Manage goalkeeper nominees, categories, images, voters and results from one clean dashboard.
+        </p>
+    </div>
+
+    <!-- OVERVIEW CARDS -->
+    <section class="admin-overview">
+        <div class="admin-stat-card">
+            <div class="admin-stat-icon">🧤</div>
+            <div>
+                <strong id="adminGoalkeeperCount">0</strong>
+                <span>Goalkeepers</span>
+            </div>
+        </div>
+
+        <div class="admin-stat-card">
+            <div class="admin-stat-icon">🏆</div>
+            <div>
+                <strong id="adminCategoryCount">0</strong>
+                <span>Categories</span>
+            </div>
+        </div>
+
+        <div class="admin-stat-card">
+            <div class="admin-stat-icon">📊</div>
+            <div>
+                <strong id="adminVoteCount">0</strong>
+                <span>Total Votes</span>
+            </div>
+        </div>
+
+        <div class="admin-stat-card leader">
+            <div class="admin-stat-icon">⭐</div>
+            <div>
+                <strong id="adminLeaderName">None</strong>
+                <span>Current Leader</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ADMIN GRID -->
+    <section class="admin-grid">
+
+        <!-- CATEGORY PANEL -->
+        <div class="admin-panel glass-card" id="categoryPanel">
+            <div class="panel-head">
+                <div>
+                    <small>CATEGORY</small>
+                    <h3>Manage Category</h3>
+                </div>
+            </div>
+
+            <form id="adminCategoryForm" class="admin-form">
+                <div class="form-group">
+                    <label>Category Name</label>
+                    <input id="adminCategoryName" type="text" placeholder="Example: BEST GOALKEEPER">
+                </div>
+
+                <button class="btn btn-gold" type="submit">
+                    Add Category
+                </button>
+            </form>
+
+            <div id="adminCategoryList" class="admin-list">
+                <p class="admin-muted">Categories will appear here.</p>
+            </div>
+        </div>
+
+        <!-- GOALKEEPER FORM -->
+        <div class="admin-panel glass-card" id="goalkeeperFormPanel">
+            <div class="panel-head">
+                <div>
+                    <small>NOMINEES</small>
+                    <h3>Add / Edit Goalkeeper</h3>
+                </div>
+            </div>
+
+            <form id="adminGoalkeeperForm" class="admin-form">
+                <input id="editingGoalkeeperId" type="hidden">
+
+                <div class="form-group">
+                    <label>Goalkeeper Name</label>
+                    <input id="adminGoalkeeperName" type="text" placeholder="Enter goalkeeper name">
+                </div>
+
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="adminGoalkeeperCategory">
+                        <option value="">Select category</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Goalkeeper Photo</label>
+                    <input id="adminGoalkeeperImage" type="file" accept="image/*">
+                </div>
+
+                <div class="form-group">
+                    <label>Comments / Sifa</label>
+                    <textarea id="adminGoalkeeperDescription" placeholder="Write performance, saves, discipline, leadership..."></textarea>
+                </div>
+
+                <div class="admin-form-actions">
+                    <button class="btn btn-gold" id="adminGoalkeeperSubmit" type="submit">
+                        Add Goalkeeper
+                    </button>
+
+                    <button class="btn btn-dark" id="cancelGoalkeeperEdit" type="button" style="display:none;">
+                        Cancel Edit
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    </section>
+
+    <!-- GOALKEEPER LIST -->
+    <section class="admin-panel glass-card">
+        <div class="panel-head">
+            <div>
+                <small>LIST</small>
+                <h3>Goalkeeper Nominees</h3>
+            </div>
+
+            <button class="btn btn-dark" id="refreshAdminData" type="button">
+                Refresh
+            </button>
+        </div>
+
+        <div id="adminGoalkeeperList" class="admin-goalkeeper-list">
+            <p class="admin-muted">Goalkeepers will appear here.</p>
+        </div>
+    </section>
+
+    <!-- RESULTS + VOTERS -->
+    <section class="admin-grid second-grid">
+
+        <div class="admin-panel glass-card">
+            <div class="panel-head">
+                <div>
+                    <small>RESULTS</small>
+                    <h3>Winner & Ranking</h3>
+                </div>
+            </div>
+
+            <button class="btn btn-gold" id="showAdminResults" type="button">
+                Show Results
+            </button>
+
+            <div id="adminResultsBox" class="admin-results-box"></div>
+        </div>
+
+        <div class="admin-panel glass-card">
+            <div class="panel-head">
+                <div>
+                    <small>VOTERS</small>
+                    <h3>Registered Voters</h3>
+                </div>
+            </div>
+
+            <button class="btn btn-dark" id="loadAdminVoters" type="button">
+                Load Voters
+            </button>
+
+            <div id="adminVotersBox" class="admin-list"></div>
+        </div>
+
+    </section>
+
+    <!-- DANGER ZONE -->
+    <section class="admin-panel danger-zone">
+        <div>
+            <small>DANGER ZONE</small>
+            <h3>Reset Election</h3>
+            <p>
+                This action can reset voting data. Use it carefully only when you are sure.
+            </p>
+        </div>
+
+        <button class="btn btn-red" id="resetElectionBtn" type="button">
+            Reset Election
+        </button>
+    </section>
+
+</section>
+
+<div id="adminToast" class="toast-message"></div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'jagwa/js/admin.js?v=force-admin-20260624' %}?v=admin-fix-html-voters-1781808042" defer></script>
+
+<script>
+  // Admin panel should not use saved voter profile.
+  // When admin opens Vote/My Vote, force normal voter login with name + phone.
+  try {
+    localStorage.removeItem("voterProfile");
+    localStorage.removeItem("voteMessage");
+  } catch (e) {}
+</script>
+
+
+<script>
+  // Admin panel should not keep saved voter profile.
+  // Vote/My Vote must ask for Name + Phone Number.
+  try {
+    localStorage.removeItem("voterProfile");
+    localStorage.removeItem("voteMessage");
+  } catch (e) {}
+
+  document.addEventListener("click", function(e) {
+    const link = e.target.closest(".force-user-login");
+    if (!link) return;
+    try {
+      localStorage.removeItem("voterProfile");
+      localStorage.removeItem("voteMessage");
+    } catch (err) {}
+  });
+</script>
+
+{% endblock %}

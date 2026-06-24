@@ -214,3 +214,15 @@ REST_FRAMEWORK = {
         "admin": "120/min",
     },
 }
+
+# TEMPORARY: allow admin login over HTTP while using VPS IP before SSL
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = False
+SECURE_SSL_REDIRECT = False
+
+# HOSTINGER TEMP FIX: allow Django admin over HTTP using VPS IP before SSL/domain
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = False
+SECURE_SSL_REDIRECT = False
+CSRF_COOKIE_NAME = "csrftoken_vps"
+SESSION_COOKIE_NAME = "sessionid_vps"
