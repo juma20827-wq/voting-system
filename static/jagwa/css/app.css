@@ -2006,3 +2006,27 @@ textarea {
         align-items: stretch;
     }
 }
+
+/* FINAL BRAND LOGO RED RING */
+.brand-logo,
+.logo,
+.logo-circle {
+  border-color: #ef233c !important;
+  box-shadow:
+    0 0 0 4px rgba(239, 35, 60, 0.16),
+    0 0 28px rgba(239, 35, 60, 0.45) !important;
+}
+
+.brand-logo img {
+  border-color: #ef233c !important;
+}
+
+.brand-logo::before,
+.brand-logo::after,
+.logo::before,
+.logo::after,
+.logo-circle::before,
+.logo-circle::after {
+  border-color: #ef233c !important;
+  box-shadow: 0 0 22px rgba(239, 35, 60, 0.45) !important;
+}

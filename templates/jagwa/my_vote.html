@@ -1,9 +1,6 @@
 {% extends "jagwa/base.html" %}
 {% load static %}
 
-
-
-
 {% block nav %}
 <a href="/">Home</a>
 <a href="/vote/">Vote</a>
@@ -13,127 +10,207 @@
 
 {% block content %}
 <style>
-  .result-wrap {
-    max-width: 980px;
-    margin: 34px auto 80px;
-    padding: 0 18px;
-    color: #fff;
+  .result-page-wrap {
+    max-width: 1180px;
+    margin: 32px auto;
+    padding: 0 18px 90px;
   }
 
-  .result-header {
+  .result-header-card {
+    max-width: 900px;
+    margin: 0 auto 28px;
     background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 24px;
-    padding: 22px;
-    margin-bottom: 22px;
-  }
-
-  .result-header h2 {
-    margin: 0 0 8px;
-    font-size: 30px;
-    font-weight: 900;
-  }
-
-  .result-card {
-    display: flex;
-    gap: 18px;
-    align-items: flex-start;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 24px;
-    padding: 18px;
-    margin-bottom: 22px;
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 26px;
+    padding: 24px;
+    color: white;
+    text-align: center;
     box-shadow: 0 16px 35px rgba(0,0,0,0.22);
   }
 
-  .result-img {
-    width: 150px;
-    height: 150px;
-    border-radius: 18px;
-    background: #05070d;
-    display: flex;
-    align-items: center;
+  .result-header-card h2 {
+    margin: 0 0 8px;
+    font-size: 32px;
+    font-weight: 950;
+    letter-spacing: 1px;
+  }
+
+  .result-header-card p {
+    margin: 6px 0;
+    color: #d1d5db;
+    font-weight: 800;
+  }
+
+  .result-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 460px));
     justify-content: center;
-    padding: 8px;
-    flex: 0 0 150px;
+    gap: 30px;
   }
 
-  .result-img img {
-    max-width: 100%;
-    max-height: 100%;
+  .result-card {
+    width: 100%;
+    max-width: 460px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.075), rgba(255,255,255,0.035));
+    border: 1px solid rgba(255,255,255,0.16);
+    border-radius: 28px;
+    overflow: hidden;
+    color: white;
+    box-shadow: 0 16px 35px rgba(0,0,0,0.22);
+  }
+
+  .result-image-box {
+    position: relative;
+    width: 100%;
+    height: 330px;
+    overflow: hidden;
+    background: #04070d;
+  }
+
+  .result-bg-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: blur(18px) brightness(.55) saturate(1.25);
+    transform: scale(1.15);
+  }
+
+  .result-main-img {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
     object-fit: contain;
-    border-radius: 14px;
+    object-position: center;
   }
 
-  .result-info h3 {
-    margin: 5px 0 10px;
-    font-size: 24px;
-    font-weight: 900;
+  .result-body {
+    padding: 22px;
   }
 
   .result-badge {
     display: inline-block;
-    background: #ef233c;
-    color: #fff;
-    padding: 6px 10px;
+    background: linear-gradient(135deg, #ef233c, #ff7a18);
+    color: white;
+    padding: 9px 18px;
     border-radius: 999px;
-    font-weight: 900;
-    font-size: 13px;
+    font-weight: 950;
+    margin-bottom: 14px;
   }
 
-  .result-comment {
-    background: rgba(255,255,255,0.08);
-    padding: 10px 12px;
-    border-radius: 13px;
-    margin: 9px 0;
-    font-weight: 800;
+  .result-body h3 {
+    margin: 0 0 10px;
+    font-size: 25px;
+    font-weight: 950;
+    letter-spacing: .5px;
   }
 
-  .result-label {
+  .result-position {
+    color: #d1d5db;
+    margin-bottom: 16px;
+    font-size: 18px;
+    font-weight: 850;
+  }
+
+  .comment-line {
+    border-radius: 16px;
+    padding: 13px 15px;
+    margin: 11px 0;
+    border: 1px solid rgba(255,255,255,.12);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+    line-height: 1.45;
+  }
+
+  .comment-line.national {
+    background: linear-gradient(135deg, rgba(239,35,60,.22), rgba(255,255,255,.07));
+  }
+
+  .comment-line.club {
+    background: linear-gradient(135deg, rgba(22,163,74,.22), rgba(255,255,255,.07));
+  }
+
+  .comment-label {
     display: block;
-    color: #ef233c;
+    color: #ff4057;
     font-size: 12px;
+    font-weight: 950;
     letter-spacing: 1px;
-    margin-bottom: 3px;
+    margin-bottom: 4px;
   }
 
-  .result-value {
+  .comment-value {
     display: block;
     color: #fff;
+    font-size: 18px;
+    font-weight: 950;
+  }
+
+  .voted-status {
+    margin-top: 16px;
+    width: 100%;
+    border-radius: 18px;
+    padding: 16px;
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+    color: white;
+    font-size: 17px;
+    font-weight: 950;
+    text-align: center;
+    box-shadow: 0 12px 24px rgba(22,163,74,.25);
   }
 
   .back-btn {
     display: inline-block;
-    background: #fff;
-    color: #111827;
-    padding: 12px 16px;
-    border-radius: 14px;
+    margin-top: 14px;
+    background: linear-gradient(135deg, #ef233c, #ff7a18);
+    color: white;
+    padding: 13px 18px;
+    border-radius: 15px;
+    font-weight: 950;
     text-decoration: none;
-    font-weight: 900;
+  }
+
+  .result-alert {
+    max-width: 900px;
+    margin: 0 auto;
+    border-radius: 18px;
+    padding: 16px;
+    background: rgba(239,35,60,0.12);
+    border: 1px solid rgba(239,35,60,0.25);
+    color: white;
+    font-weight: 850;
+    text-align: center;
   }
 
   @media (max-width: 650px) {
-    .result-wrap {
+    .result-page-wrap {
       margin-top: 18px;
-      padding: 0 12px 80px;
+      padding: 0 12px 90px;
+    }
+
+    .result-grid {
+      grid-template-columns: 1fr;
+      gap: 26px;
     }
 
     .result-card {
-      flex-direction: column;
-      gap: 14px;
-      padding: 16px;
+      max-width: 100%;
+      border-radius: 26px;
     }
 
-    .result-img {
-      width: 100%;
-      height: 220px;
-      flex: none;
+    .result-image-box {
+      height: 310px;
+    }
+
+    .result-header-card h2 {
+      font-size: 26px;
     }
   }
 </style>
 
-<div class="result-wrap">
-  <section class="result-header">
+<div class="result-page-wrap">
+  <section class="result-header-card">
     <h2>Result</h2>
     <p>Hapa utaona nominees wote uliowapigia kura.</p>
     <a href="/vote/" class="back-btn">Back to Vote</a>
@@ -164,9 +241,9 @@
     const voter = getVoter();
 
     document.querySelectorAll("a").forEach(a => {
-      const text = (a.textContent || "").trim().toLowerCase();
+      const t = (a.textContent || "").trim().toLowerCase();
 
-      if (text === "login") {
+      if (t === "login") {
         if (voter && voter.token) {
           a.textContent = "Logout";
           a.href = "#";
@@ -204,6 +281,7 @@
       .replace(/CLUB\s*\/\s*TEAM/ig, " ")
       .replace(/^TEAM/ig, " ")
       .replace(/\bCOMMENT\b/ig, " ")
+      .replace(/[._]+/g, " ")
       .replace(/\s+/g, " ")
       .trim();
   }
@@ -221,9 +299,11 @@
     let club = "";
 
     const n = flat.match(/NATIONAL\s+TEAM\s*(?:⚽)?\s*(.*)$/i);
+
     if (n) {
       let rest = n[1] || "";
       const split = rest.match(/^(.*?)(?:🏆|CLUB\s*\/\s*TEAM|TEAM\s*⚽|TEAM\s+)(.*)$/i);
+
       if (split) {
         national = cleanValue(split[1]);
         club = cleanValue(split[2]);
@@ -238,8 +318,9 @@
     }
 
     const rows = [];
-    if (national && national.length > 1) rows.push({label: "NATIONAL TEAM", value: national});
-    if (club && club.length > 1) rows.push({label: "CLUB / TEAM", value: club});
+
+    if (national && national.length > 1) rows.push({type: "national", label: "NATIONAL TEAM", value: national});
+    if (club && club.length > 1) rows.push({type: "club", label: "CLUB / TEAM", value: club});
 
     return rows;
   }
@@ -249,19 +330,26 @@
     if (!rows.length) return "";
 
     return rows.map(row => `
-      <div class="result-comment">
-        <span class="result-label">${safe(row.label)}</span>
-        <span class="result-value">${safe(row.value)}</span>
+      <div class="comment-line ${safe(row.type)}">
+        <span class="comment-label">${safe(row.label)}</span>
+        <span class="comment-value">${safe(row.value)}</span>
       </div>
     `).join("");
   }
 
   function imageHTML(v) {
     if (v.image_url) {
-      return `<div class="result-img"><img src="${safe(v.image_url)}"></div>`;
+      const src = safe(v.image_url);
+
+      return `
+        <div class="result-image-box">
+          <img class="result-bg-img" src="${src}" alt="">
+          <img class="result-main-img" src="${src}" alt="${safe(v.candidate || v.name)}">
+        </div>
+      `;
     }
 
-    return `<div class="result-img">No Image</div>`;
+    return `<div class="result-image-box"><span>No Image</span></div>`;
   }
 
   async function loadResult() {
@@ -271,7 +359,7 @@
     const voter = getVoter();
 
     if (!voter || !voter.token) {
-      box.innerHTML = `<div class="result-header">Login kwanza kuona result. <a href="/vote/" class="back-btn">Go to Vote</a></div>`;
+      box.innerHTML = `<div class="result-alert">Login kwanza kuona result. <br><a href="/vote/" class="back-btn">Go to Vote</a></div>`;
       return;
     }
 
@@ -281,31 +369,35 @@
       });
 
       if (!data.votes || !data.votes.length) {
-        box.innerHTML = `<div class="result-header">Bado hujapiga kura.</div>`;
+        box.innerHTML = `<div class="result-alert">Bado hujapiga kura.</div>`;
         return;
       }
 
       box.innerHTML = `
-        <section class="result-header">
-          <h3>${safe(data.voter.name)}</h3>
+        <section class="result-header-card">
+          <h2>${safe(data.voter.name)}</h2>
           <p>${safe(data.voter.phone)}</p>
           <p><b>Total votes:</b> ${data.votes.length}</p>
         </section>
 
-        ${data.votes.map((v, i) => `
-          <section class="result-card">
-            ${imageHTML(v)}
-            <div class="result-info">
-              <span class="result-badge">Vote #${i + 1}</span>
-              <h3>${safe(v.candidate)}</h3>
-              <p><b>Category:</b> ${safe(v.position)}</p>
-              ${commentsHTML(v.description)}
+        <div class="result-grid">
+          ${data.votes.map((v, i) => `
+            <div class="result-card">
+              ${imageHTML(v)}
+
+              <div class="result-body">
+                <span class="result-badge">Vote #${i + 1}</span>
+                <h3>${safe(v.candidate)}</h3>
+                <div class="result-position">${safe(v.position)}</div>
+                ${commentsHTML(v.description)}
+                <div class="voted-status">Voted ✓</div>
+              </div>
             </div>
-          </section>
-        `).join("")}
+          `).join("")}
+        </div>
       `;
     } catch (err) {
-      box.innerHTML = `<div class="result-header">${safe(err.message)}</div>`;
+      box.innerHTML = `<div class="result-alert">${safe(err.message)}</div>`;
     }
   }
 

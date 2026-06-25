@@ -746,3 +746,72 @@ class AdminVoteView(AdminBaseView):
         ]
 
         return Response(data)
+
+# FINAL ADMIN CANDIDATE EDIT/DELETE API
+class AdminCandidateDetailFinalView(APIView):
+    def _admin_allowed(self, request):
+        provided = (
+            request.headers.get("X-Admin-Key")
+            or request.query_params.get("admin_key")
+            or request.headers.get("Authorization")
+            or ""
+        )
+
+        try:
+            if is_valid_admin_key(provided):
+                return True
+        except Exception:
+            pass
+
+        return False
+
+    def patch(self, request, pk):
+        if not self._admin_allowed(request):
+            return Response({"detail": "Invalid admin key"}, status=status.HTTP_403_FORBIDDEN)
+
+        try:
+            candidate = Candidate.objects.select_related("position").get(pk=pk)
+        except Candidate.DoesNotExist:
+            return Response({"detail": "Candidate not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        name = request.data.get("name")
+        position_id = request.data.get("position_id")
+        description = request.data.get("description")
+
+        if name is not None:
+            candidate.name = str(name).strip()
+
+        if position_id:
+            try:
+                candidate.position = Position.objects.get(pk=position_id)
+            except Position.DoesNotExist:
+                return Response({"detail": "Category not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        if description is not None:
+            candidate.description = description
+
+        candidate.save()
+
+        return Response({
+            "id": candidate.id,
+            "name": candidate.name,
+            "position_id": candidate.position.id,
+            "position_name": candidate.position.name,
+            "description": candidate.description or "",
+            "image_url": get_candidate_image_url(candidate),
+        })
+
+    def put(self, request, pk):
+        return self.patch(request, pk)
+
+    def delete(self, request, pk):
+        if not self._admin_allowed(request):
+            return Response({"detail": "Invalid admin key"}, status=status.HTTP_403_FORBIDDEN)
+
+        try:
+            candidate = Candidate.objects.get(pk=pk)
+        except Candidate.DoesNotExist:
+            return Response({"detail": "Candidate not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        candidate.delete()
+        return Response({"detail": "Candidate deleted"})

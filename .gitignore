@@ -53,3 +53,16 @@ __pycache__/
 *.pyc
 staticfiles/
 media/
+
+# server/private
+.env
+venv/
+staticfiles/
+media/
+backups/
+*.bak*
+*.backup
+*.old
+*.tmp
+__pycache__/
+*.pyc

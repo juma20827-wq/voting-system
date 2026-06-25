@@ -13,7 +13,7 @@
   .vote-page-wrap {
     max-width: 1180px;
     margin: 32px auto;
-    padding: 0 18px 70px;
+    padding: 0 18px 90px;
   }
 
   .vote-alert {
@@ -33,50 +33,189 @@
     background: rgba(10, 15, 25, 0.94);
     border: 1px solid rgba(255,255,255,0.12);
     border-radius: 22px;
-    padding: 16px;
+    padding: 18px;
     color: white;
-  }
-
-  .category-inner {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 14px;
-    flex-wrap: wrap;
+    text-align: center;
   }
 
   .category-title h3 {
     margin: 0;
-    font-size: 24px;
-    font-weight: 900;
+    font-size: 25px;
+    font-weight: 950;
   }
 
   .category-title p {
-    margin: 4px 0 0;
+    margin: 6px 0 0;
     color: #b9c1d1;
     font-weight: 700;
   }
 
-  .category-actions {
+  .nominee-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 460px));
+    justify-content: center;
+    gap: 30px;
+  }
+
+  .nominee-card {
+    width: 100%;
+    max-width: 460px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.075), rgba(255,255,255,0.035));
+    border: 1px solid rgba(255,255,255,0.16);
+    border-radius: 28px;
+    overflow: hidden;
+    color: white;
+    box-shadow: 0 16px 35px rgba(0,0,0,0.22);
+  }
+
+  .nominee-image-box {
+    position: relative;
+    width: 100%;
+    height: 330px;
+    overflow: hidden;
+    background: #04070d;
+  }
+
+  .nominee-bg-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: blur(18px) brightness(.55) saturate(1.25);
+    transform: scale(1.15);
+  }
+
+  .nominee-main-img {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+  }
+
+  .nominee-body {
+    padding: 22px;
+  }
+
+  .nominee-body h3 {
+    margin: 0 0 10px;
+    font-size: 25px;
+    font-weight: 950;
+    letter-spacing: .5px;
+  }
+
+  .nominee-position {
+    color: #d1d5db;
+    margin-bottom: 16px;
+    font-size: 18px;
+    font-weight: 850;
+  }
+
+  .comment-line {
+    border-radius: 16px;
+    padding: 13px 15px;
+    margin: 11px 0;
+    border: 1px solid rgba(255,255,255,.12);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+    line-height: 1.45;
+  }
+
+  .comment-line.national {
+    background: linear-gradient(135deg, rgba(239,35,60,.22), rgba(255,255,255,.07));
+  }
+
+  .comment-line.club {
+    background: linear-gradient(135deg, rgba(22,163,74,.22), rgba(255,255,255,.07));
+  }
+
+  .comment-label {
+    display: block;
+    color: #ff4057;
+    font-size: 12px;
+    font-weight: 950;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+
+  .comment-value {
+    display: block;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 950;
+  }
+
+  .vote-btn {
+    margin-top: 16px;
+    width: 100%;
+    border: 0;
+    border-radius: 18px;
+    padding: 16px;
+    background: linear-gradient(135deg, #ef233c, #ff7a18);
+    color: white;
+    font-size: 17px;
+    font-weight: 950;
+    cursor: pointer;
+    box-shadow: 0 12px 24px rgba(239,35,60,.25);
+    transition: .2s ease;
+  }
+
+  .vote-btn:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.08);
+  }
+
+  .vote-btn.voted {
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+    color: white;
+    box-shadow: 0 12px 24px rgba(22,163,74,.25);
+  }
+
+  .bottom-category-actions {
+    max-width: 900px;
+    margin: 32px auto 0;
     display: flex;
-    gap: 10px;
+    justify-content: center;
+    gap: 12px;
     flex-wrap: wrap;
+    background: rgba(10, 15, 25, 0.88);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 22px;
+    padding: 16px;
   }
 
   .cat-btn {
     border: 0;
-    padding: 11px 16px;
-    border-radius: 14px;
-    font-weight: 900;
+    padding: 13px 18px;
+    border-radius: 15px;
+    font-weight: 950;
     cursor: pointer;
     text-decoration: none;
     display: inline-block;
+    min-width: 120px;
+    text-align: center;
   }
 
-  .cat-btn.prev { background: #ffffff; color: #111827; }
-  .cat-btn.next { background: #ef233c; color: #ffffff; }
-  .cat-btn.result { background: #16a34a; color: #ffffff; }
-  .cat-btn:disabled { opacity: .45; cursor: not-allowed; }
+  .cat-btn.prev {
+    background: #ffffff;
+    color: #111827;
+  }
+
+  .cat-btn.next {
+    background: linear-gradient(135deg, #ef233c, #ff7a18);
+    color: white;
+  }
+
+  .cat-btn.result {
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+    color: white;
+  }
+
+  .cat-btn:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+  }
 
   .login-box {
     max-width: 520px;
@@ -101,139 +240,43 @@
     border: 0;
     padding: 13px;
     border-radius: 14px;
-    background: #ef233c;
+    background: linear-gradient(135deg, #ef233c, #ff7a18);
     color: white;
-    font-weight: 900;
-  }
-
-  .nominee-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 430px));
-    justify-content: center;
-    gap: 26px;
-  }
-
-  .nominee-card {
-    width: 100%;
-    max-width: 430px;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 24px;
-    overflow: hidden;
-    color: white;
-    box-shadow: 0 16px 35px rgba(0,0,0,0.22);
-  }
-
-  .nominee-image-box {
-    width: 100%;
-    height: 225px;
-    background: #05070d;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 10px;
-  }
-
-  .nominee-image-box img {
-    max-width: 100%;
-    max-height: 100%;
-    width: auto;
-    height: auto;
-    object-fit: contain;
-    object-position: center;
-    border-radius: 14px;
-  }
-
-  .nominee-body {
-    padding: 18px;
-  }
-
-  .nominee-body h3 {
-    margin: 0 0 8px;
-    font-size: 22px;
-    font-weight: 900;
-    letter-spacing: .5px;
-  }
-
-  .nominee-position {
-    color: #b9c1d1;
-    margin-bottom: 12px;
-    font-weight: 800;
-  }
-
-  .comment-line {
-    background: rgba(255,255,255,0.08);
-    border-radius: 13px;
-    padding: 10px 12px;
-    margin: 9px 0;
-    font-weight: 800;
-    line-height: 1.45;
-    word-break: break-word;
-  }
-
-  .comment-label {
-    display: block;
-    color: #ef233c;
-    font-size: 12px;
-    letter-spacing: 1px;
-    margin-bottom: 3px;
-  }
-
-  .comment-value {
-    display: block;
-    color: #fff;
-  }
-
-  .vote-btn {
-    margin-top: 15px;
-    width: 100%;
-    border: 0;
-    border-radius: 15px;
-    padding: 14px;
-    background: #ffffff;
-    color: #111827;
-    font-weight: 900;
-    cursor: pointer;
-    transition: .2s ease;
-  }
-
-  .vote-btn:hover {
-    background: #ef233c;
-    color: #fff;
-  }
-
-  .vote-btn.voted {
-    background: #16a34a !important;
-    color: white !important;
+    font-weight: 950;
   }
 
   @media (max-width: 650px) {
     .vote-page-wrap {
       margin-top: 18px;
-      padding: 0 12px 70px;
+      padding: 0 12px 90px;
     }
 
     .nominee-grid {
       grid-template-columns: 1fr;
-      gap: 22px;
+      gap: 26px;
     }
 
     .nominee-card {
       max-width: 100%;
+      border-radius: 26px;
     }
 
     .nominee-image-box {
-      height: 215px;
+      height: 310px;
     }
 
-    .category-actions {
-      width: 100%;
+    .bottom-category-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .bottom-category-actions .result {
+      grid-column: 1 / -1;
     }
 
     .cat-btn {
-      flex: 1;
-      text-align: center;
-      padding: 12px 10px;
+      width: 100%;
+      min-width: 0;
     }
   }
 </style>
@@ -285,9 +328,11 @@
 
   function updateLoginToLogout() {
     const voter = getVoter();
+
     document.querySelectorAll("a").forEach(a => {
-      const text = (a.textContent || "").trim().toLowerCase();
-      if (text === "login") {
+      const t = (a.textContent || "").trim().toLowerCase();
+
+      if (t === "login") {
         if (voter && voter.token) {
           a.textContent = "Logout";
           a.href = "#";
@@ -303,11 +348,8 @@
   }
 
   function getVotedSet() {
-    try {
-      return new Set(JSON.parse(localStorage.getItem("votedCandidates") || "[]"));
-    } catch {
-      return new Set();
-    }
+    try { return new Set(JSON.parse(localStorage.getItem("votedCandidates") || "[]")); }
+    catch { return new Set(); }
   }
 
   function markVoted(candidateId) {
@@ -320,6 +362,7 @@
     const res = await fetch(url, options || {});
     const text = await res.text();
     let data = null;
+
     try { data = text ? JSON.parse(text) : null; } catch { data = text; }
 
     if (!res.ok) {
@@ -338,6 +381,7 @@
       .replace(/CLUB\s*\/\s*TEAM/ig, " ")
       .replace(/^TEAM/ig, " ")
       .replace(/\bCOMMENT\b/ig, " ")
+      .replace(/[._]+/g, " ")
       .replace(/\s+/g, " ")
       .trim();
   }
@@ -358,6 +402,7 @@
     if (n) {
       let rest = n[1] || "";
       const split = rest.match(/^(.*?)(?:🏆|CLUB\s*\/\s*TEAM|TEAM\s*⚽|TEAM\s+)(.*)$/i);
+
       if (split) {
         national = cleanValue(split[1]);
         club = cleanValue(split[2]);
@@ -372,14 +417,9 @@
     }
 
     const rows = [];
-    if (national && national.length > 1) rows.push({label: "NATIONAL TEAM", value: national});
-    if (club && club.length > 1) rows.push({label: "CLUB / TEAM", value: club});
 
-    if (!rows.length && raw) {
-      raw.split(/\n+/).map(x => cleanValue(x)).filter(Boolean).forEach(x => {
-        rows.push({label: "COMMENT", value: x});
-      });
-    }
+    if (national && national.length > 1) rows.push({type: "national", label: "NATIONAL TEAM", value: national});
+    if (club && club.length > 1) rows.push({type: "club", label: "CLUB / TEAM", value: club});
 
     return rows;
   }
@@ -389,7 +429,7 @@
     if (!rows.length) return "";
 
     return rows.map(row => `
-      <div class="comment-line">
+      <div class="comment-line ${safe(row.type)}">
         <span class="comment-label">${safe(row.label)}</span>
         <span class="comment-value">${safe(row.value)}</span>
       </div>
@@ -398,18 +438,17 @@
 
   function imageHTML(c) {
     if (c.image_url) {
+      const src = safe(c.image_url);
+
       return `
         <div class="nominee-image-box">
-          <img src="${safe(c.image_url)}" alt="${safe(c.name)}">
+          <img class="nominee-bg-img" src="${src}" alt="">
+          <img class="nominee-main-img" src="${src}" alt="${safe(c.name)}">
         </div>
       `;
     }
 
-    return `
-      <div class="nominee-image-box">
-        <span>No Image</span>
-      </div>
-    `;
+    return `<div class="nominee-image-box"><span>No Image</span></div>`;
   }
 
   async function login(name, phone) {
@@ -475,35 +514,16 @@
     if (current >= positions.length) current = positions.length - 1;
 
     localStorage.setItem("currentCategoryIndex", String(current));
-
     const pos = positions[current];
 
     document.getElementById("categoryBox").innerHTML = `
       <div class="category-bar">
-        <div class="category-inner">
-          <div class="category-title">
-            <h3>${safe(pos.name)}</h3>
-            <p>Category ${current + 1} of ${positions.length}</p>
-          </div>
-
-          <div class="category-actions">
-            <button id="prevBtn" class="cat-btn prev" ${current === 0 ? "disabled" : ""}>Previous</button>
-            <button id="nextBtn" class="cat-btn next" ${current === positions.length - 1 ? "disabled" : ""}>Next</button>
-            <a href="/my-vote/" class="cat-btn result">Result</a>
-          </div>
+        <div class="category-title">
+          <h3>${safe(pos.name)}</h3>
+          <p>Category ${current + 1} of ${positions.length}</p>
         </div>
       </div>
     `;
-
-    document.getElementById("prevBtn").onclick = function () {
-      current--;
-      loadVotePage();
-    };
-
-    document.getElementById("nextBtn").onclick = function () {
-      current++;
-      loadVotePage();
-    };
 
     const candidates = await api(API + "positions/" + pos.id + "/candidates/");
     const box = document.getElementById("nomineesBox");
@@ -518,6 +538,7 @@
       <div class="nominee-grid">
         ${candidates.map(c => {
           const voted = votedSet.has(String(c.id));
+
           return `
             <div class="nominee-card">
               ${imageHTML(c)}
@@ -533,7 +554,25 @@
           `;
         }).join("")}
       </div>
+
+      <div class="bottom-category-actions">
+        <button id="prevBtn" class="cat-btn prev" ${current === 0 ? "disabled" : ""}>Previous</button>
+        <button id="nextBtn" class="cat-btn next" ${current === positions.length - 1 ? "disabled" : ""}>Next</button>
+        <a href="/my-vote/" class="cat-btn result">Result</a>
+      </div>
     `;
+
+    document.getElementById("prevBtn").onclick = function () {
+      current--;
+      loadVotePage();
+      window.scrollTo({top: 0, behavior: "smooth"});
+    };
+
+    document.getElementById("nextBtn").onclick = function () {
+      current++;
+      loadVotePage();
+      window.scrollTo({top: 0, behavior: "smooth"});
+    };
 
     document.querySelectorAll(".vote-btn").forEach(btn => {
       btn.onclick = async function () {

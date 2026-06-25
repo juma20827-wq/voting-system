@@ -32,3 +32,8 @@ urlpatterns = [
     path('admin/upload-image/', AdminUploadImageView.as_view(), name='admin-upload-image'),
     path('admin/reset/', ResetElectionView.as_view(), name='admin-reset'),
 ]
+
+
+# FINAL ADMIN CANDIDATE EDIT/DELETE ROUTE
+from .views import AdminCandidateDetailFinalView
+urlpatterns.insert(0, path("admin/candidates/<int:pk>/", AdminCandidateDetailFinalView.as_view(), name="admin-candidate-detail-final"))
