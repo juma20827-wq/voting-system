@@ -46,10 +46,10 @@
       .replace(/\r/g, " ")
       .replace(/🇹🇿|🏆|⚽/g, " ")
       .replace(/NATIONAL\s+TEAM/ig, " ")
-      .replace(/CLUB\s*\/\s*TEAM/ig, " ")
+      .replace(/(?:CLUB\s*\/\s*TEAM|CLUB)/ig, " ")
       .replace(/^TEAM/ig, " ")
       .replace(/\bCOMMENT\b/ig, " ")
-      .replace(/[._]+/g, " ")
+      .replace(/^[\s:._-]+/g, " ").replace(/[._]+/g, " ")
       .replace(/\s+/g, " ")
       .trim();
   }
@@ -69,7 +69,7 @@
 
     if (n) {
       let rest = n[1] || "";
-      const split = rest.match(/^(.*?)(?:🏆|CLUB\s*\/\s*TEAM|TEAM\s*⚽|TEAM\s+)(.*)$/i);
+      const split = rest.match(/^(.*?)(?:🏆|(?:CLUB\s*\/\s*TEAM|CLUB)|TEAM\s*⚽|TEAM\s+)(.*)$/i);
 
       if (split) {
         national = cleanValue(split[1]);
@@ -79,8 +79,8 @@
       }
     }
 
-    if (!club && /🏆|CLUB\s*\/\s*TEAM/i.test(flat)) {
-      const c = flat.match(/(?:🏆\s*)?(?:CLUB\s*\/\s*TEAM)\s*(?:⚽)?\s*(.*)$/i);
+    if (!club && /🏆|(?:CLUB\s*\/\s*TEAM|CLUB)/i.test(flat)) {
+      const c = flat.match(/(?:🏆\s*)?(?:(?:CLUB\s*\/\s*TEAM|CLUB))\s*(?:⚽)?\s*(.*)$/i);
       if (c) club = cleanValue(c[1]);
     }
 
