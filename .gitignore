@@ -79,3 +79,16 @@ backups/
 *.tmp
 __pycache__/
 *.pyc
+
+# private/server files
+.env
+venv/
+staticfiles/
+media/
+backups/
+*.bak*
+*.backup
+*.old
+*.tmp
+__pycache__/
+*.pyc

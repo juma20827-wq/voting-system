@@ -6,9 +6,9 @@
 
 {% block nav %}
 <a href="/">Home</a>
-<a href="/jagwa-control/">Admin</a>
-<a href="/login/?next=/vote/" onclick="localStorage.removeItem('voterProfile')">Vote</a>
-<a href="/login/?next=/my-vote/" onclick="localStorage.removeItem('voterProfile')">Result</a>
+<a href="#adminResults" id="adminNavResults">Results</a>
+<a href="#" id="adminNavRefresh">Refresh</a>
+<a href="#" id="adminNavLogout">Logout</a>
 {% endblock %}
 
 {% block content %}
@@ -458,4 +458,104 @@
 })();
 </script>
 <script src="/static/admin_nominee_tools.js?v=editdelete4"></script>
+<script src="/static/admin_finish_tools.js?v=finish1"></script>
+
+
+<style id="admin-navbar-final-style">
+  #adminNavResults,
+  #adminNavRefresh,
+  #adminNavLogout {
+    cursor: pointer;
+  }
+
+  #adminNavLogout {
+    background: linear-gradient(135deg, #dc2626, #991b1b) !important;
+    color: #fff !important;
+    border-radius: 999px !important;
+    padding: 9px 15px !important;
+    font-weight: 950 !important;
+  }
+
+  #adminNavRefresh {
+    background: linear-gradient(135deg, #2563eb, #06b6d4) !important;
+    color: #fff !important;
+    border-radius: 999px !important;
+    padding: 9px 15px !important;
+    font-weight: 950 !important;
+  }
+</style>
+
+<script id="admin-navbar-final-script">
+(function () {
+  function hideQuickActionCards() {
+    document.querySelectorAll("section, .admin-card").forEach(card => {
+      const txt = (card.textContent || "").toLowerCase();
+      if (txt.includes("quick action") && (txt.includes("vote") || txt.includes("result"))) {
+        card.style.display = "none";
+      }
+    });
+  }
+
+  function bindAdminNav() {
+    const resultsLink = document.getElementById("adminNavResults");
+    const refreshLink = document.getElementById("adminNavRefresh");
+    const logoutLink = document.getElementById("adminNavLogout");
+
+    if (resultsLink) {
+      resultsLink.onclick = function (e) {
+        e.preventDefault();
+
+        const showBtn = document.getElementById("showHideResultsBtn");
+        const oldBtn = document.getElementById("loadResults");
+        const results = document.getElementById("adminResults");
+
+        if (showBtn) {
+          if (!results || results.style.display === "none" || !results.innerHTML.trim()) {
+            showBtn.click();
+          }
+        } else if (oldBtn) {
+          oldBtn.click();
+        }
+
+        setTimeout(function () {
+          const target = document.getElementById("adminFinishToolbar") || document.getElementById("adminResults");
+          if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 300);
+      };
+    }
+
+    if (refreshLink) {
+      refreshLink.onclick = function (e) {
+        e.preventDefault();
+        window.location.href = "/jagwa-control/?refresh=" + Date.now();
+      };
+    }
+
+    if (logoutLink) {
+      logoutLink.onclick = function (e) {
+        e.preventDefault();
+        if (!confirm("Logout admin?")) return;
+
+        localStorage.removeItem("ADMIN_API_KEY");
+        localStorage.removeItem("voterProfile");
+        localStorage.removeItem("votedCandidates");
+
+        window.location.href = "/jagwa-login/";
+      };
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    hideQuickActionCards();
+    bindAdminNav();
+
+    setTimeout(function () {
+      hideQuickActionCards();
+      bindAdminNav();
+    }, 800);
+  });
+})();
+</script>
+
+<script src="/static/admin_users_results_tools.js?v=leaderfix1"></script>
 {% endblock %}

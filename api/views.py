@@ -815,3 +815,180 @@ class AdminCandidateDetailFinalView(APIView):
 
         candidate.delete()
         return Response({"detail": "Candidate deleted"})
+
+# FINAL ADMIN CATEGORY DELETE + CLEAR VOTES API
+class AdminPositionDetailFinalView(APIView):
+    def _admin_allowed(self, request):
+        provided = (
+            request.headers.get("X-Admin-Key")
+            or request.query_params.get("admin_key")
+            or request.headers.get("Authorization")
+            or ""
+        )
+
+        try:
+            if is_valid_admin_key(provided):
+                return True
+        except Exception:
+            pass
+
+        return False
+
+    def delete(self, request, pk):
+        if not self._admin_allowed(request):
+            return Response({"detail": "Invalid admin key"}, status=status.HTTP_403_FORBIDDEN)
+
+        try:
+            position = Position.objects.get(pk=pk)
+        except Position.DoesNotExist:
+            return Response({"detail": "Category not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        name = position.name
+        position.delete()
+
+        return Response({"detail": f"Category deleted: {name}"})
+
+
+class AdminClearVotesFinalView(APIView):
+    def _admin_allowed(self, request):
+        provided = (
+            request.headers.get("X-Admin-Key")
+            or request.query_params.get("admin_key")
+            or request.headers.get("Authorization")
+            or ""
+        )
+
+        try:
+            if is_valid_admin_key(provided):
+                return True
+        except Exception:
+            pass
+
+        return False
+
+    def delete(self, request):
+        if not self._admin_allowed(request):
+            return Response({"detail": "Invalid admin key"}, status=status.HTTP_403_FORBIDDEN)
+
+        votes_count = Vote.objects.count()
+        voters_count = Voter.objects.count()
+
+        Vote.objects.all().delete()
+        Voter.objects.all().delete()
+
+        return Response({
+            "detail": "Votes and voters cleared",
+            "votes_deleted": votes_count,
+            "voters_deleted": voters_count,
+        })
+
+# FINAL ADMIN VOTERS + LEADERBOARD RESULTS API
+from django.db.models import Count
+
+
+class AdminVotersFinalView(APIView):
+    def _admin_allowed(self, request):
+        provided = (
+            request.headers.get("X-Admin-Key")
+            or request.query_params.get("admin_key")
+            or request.headers.get("Authorization")
+            or ""
+        )
+
+        try:
+            if is_valid_admin_key(provided):
+                return True
+        except Exception:
+            pass
+
+        return False
+
+    def get(self, request):
+        if not self._admin_allowed(request):
+            return Response({"detail": "Invalid admin key"}, status=status.HTTP_403_FORBIDDEN)
+
+        voters_data = []
+
+        for voter in Voter.objects.all().order_by("-id"):
+            votes = Vote.objects.filter(voter=voter).select_related("candidate", "position")
+
+            voters_data.append({
+                "id": voter.id,
+                "name": getattr(voter, "name", "") or getattr(voter, "full_name", "") or "Unknown",
+                "phone": getattr(voter, "phone", "") or getattr(voter, "phone_number", "") or "",
+                "votes_count": votes.count(),
+                "votes": [
+                    {
+                        "position": vote.position.name if vote.position else "",
+                        "candidate": vote.candidate.name if vote.candidate else "",
+                    }
+                    for vote in votes
+                ]
+            })
+
+        return Response({
+            "total_voters": len(voters_data),
+            "voters": voters_data,
+        })
+
+
+class AdminLeaderboardFinalView(APIView):
+    def _admin_allowed(self, request):
+        provided = (
+            request.headers.get("X-Admin-Key")
+            or request.query_params.get("admin_key")
+            or request.headers.get("Authorization")
+            or ""
+        )
+
+        try:
+            if is_valid_admin_key(provided):
+                return True
+        except Exception:
+            pass
+
+        return False
+
+    def get(self, request):
+        if not self._admin_allowed(request):
+            return Response({"detail": "Invalid admin key"}, status=status.HTTP_403_FORBIDDEN)
+
+        positions_data = []
+
+        for position in Position.objects.all().order_by("id"):
+            candidates = Candidate.objects.filter(position=position).annotate(
+                votes_count=Count("votes")
+            ).order_by("-votes_count", "name")
+
+            ranking = []
+
+            for candidate in candidates:
+                image_url = ""
+                try:
+                    image_url = get_candidate_image_url(candidate)
+                except Exception:
+                    image_url = getattr(candidate, "image_url", "") or ""
+
+                ranking.append({
+                    "id": candidate.id,
+                    "name": candidate.name,
+                    "description": candidate.description or "",
+                    "image_url": image_url,
+                    "votes": candidate.votes_count,
+                })
+
+            leaders = []
+            if ranking:
+                top_votes = ranking[0]["votes"]
+                leaders = [c for c in ranking if c["votes"] == top_votes]
+
+            positions_data.append({
+                "id": position.id,
+                "position": position.name,
+                "leaders": leaders,
+                "candidates": ranking,
+            })
+
+        return Response({
+            "positions": positions_data,
+        })

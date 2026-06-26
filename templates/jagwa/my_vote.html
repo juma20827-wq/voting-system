@@ -4,8 +4,8 @@
 {% block nav %}
 <a href="/">Home</a>
 <a href="/vote/">Vote</a>
-<a href="/my-vote/">Result</a>
-<a id="navLoginLink" href="/login/">Login</a>
+<a href="/my-vote/">MyVote</a>
+<a href="#" id="voterNavLogout">Logout</a>
 {% endblock %}
 
 {% block content %}
@@ -404,4 +404,39 @@
   loadResult();
 })();
 </script>
+
+
+<style id="voter-navbar-final-style">
+  #voterNavLogout {
+    background: linear-gradient(135deg, #dc2626, #991b1b) !important;
+    color: #fff !important;
+    border-radius: 999px !important;
+    padding: 9px 15px !important;
+    font-weight: 950 !important;
+  }
+</style>
+
+<script id="voter-navbar-final-script">
+(function () {
+  function bindVoterLogout() {
+    const logout = document.getElementById("voterNavLogout");
+    if (!logout) return;
+
+    logout.onclick = function (e) {
+      e.preventDefault();
+
+      if (!confirm("Logout voter?")) return;
+
+      localStorage.removeItem("voterProfile");
+      localStorage.removeItem("votedCandidates");
+
+      window.location.href = "/login/?next=/vote/";
+    };
+  }
+
+  document.addEventListener("DOMContentLoaded", bindVoterLogout);
+  setTimeout(bindVoterLogout, 800);
+})();
+</script>
+
 {% endblock %}
